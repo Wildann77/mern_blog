@@ -1,4 +1,3 @@
-import { Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { FaMoon, FaSun } from 'react-icons/fa';
@@ -6,6 +5,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme } from '../redux/theme/themeSlice';
 import { signoutSuccess } from '../redux/user/userSlice';
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Menu } from 'lucide-react';
 
 export default function Header() {
   const path = useLocation().pathname;
@@ -49,78 +61,150 @@ export default function Header() {
   };
 
   return (
-    <Navbar className='border-b-2'>
-      <Link
-        to='/'
-        className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white'
-      >
-        <span className='px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white'>
-          Sahand's
-        </span>
-        Blog
-      </Link>
-      <form onSubmit={handleSubmit}>
-        <TextInput
-          type='text'
-          placeholder='Search...'
-          rightIcon={AiOutlineSearch}
-          className='hidden lg:inline'
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </form>
-      <Button className='w-12 h-10 lg:hidden' color='gray' pill>
-        <AiOutlineSearch />
-      </Button>
-      <div className='flex gap-2 md:order-2'>
-        <Button
-          className='w-12 h-10 hidden sm:inline'
-          color='gray'
-          pill
-          onClick={() => dispatch(toggleTheme())}
+    <header className='border-b-2'>
+      <nav className='max-w-screen-xl mx-auto px-4 py-3 flex items-center justify-between'>
+        <Link
+          to='/'
+          className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white'
         >
-          {theme === 'light' ? <FaSun /> : <FaMoon />}
+          <span className='px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white'>
+            Sahand's
+          </span>
+          Blog
+        </Link>
+
+        <form onSubmit={handleSubmit} className='hidden lg:block'>
+          <div className='relative'>
+            <Input
+              type='text'
+              placeholder='Search...'
+              className='w-64 pr-10'
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <AiOutlineSearch className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground' />
+          </div>
+        </form>
+
+        <Button
+          variant='ghost'
+          size='icon'
+          className='lg:hidden rounded-full'
+          onClick={() => navigate('/search')}
+        >
+          <AiOutlineSearch className='h-5 w-5' />
         </Button>
-        {currentUser ? (
-          <Dropdown
-            arrowIcon={false}
-            inline
-            label={
-              <Avatar alt='user' img={currentUser.profilePicture} rounded />
-            }
+
+        <div className='flex gap-2 md:order-2 items-center'>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='hidden sm:inline-flex rounded-full'
+            onClick={() => dispatch(toggleTheme())}
           >
-            <Dropdown.Header>
-              <span className='block text-sm'>@{currentUser.username}</span>
-              <span className='block text-sm font-medium truncate'>
-                {currentUser.email}
-              </span>
-            </Dropdown.Header>
-            <Link to={'/dashboard?tab=profile'}>
-              <Dropdown.Item>Profile</Dropdown.Item>
+            {theme === 'light' ? <FaSun className='h-5 w-5' /> : <FaMoon className='h-5 w-5' />}
+          </Button>
+
+          {currentUser ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant='ghost' className='rounded-full h-10 w-10 p-0'>
+                  <Avatar>
+                    <AvatarImage src={currentUser.profilePicture} alt={currentUser.username} />
+                    <AvatarFallback>{currentUser.username.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end' className='w-56'>
+                <DropdownMenuLabel>
+                  <div className='flex flex-col space-y-1'>
+                    <p className='text-sm font-medium'>@{currentUser.username}</p>
+                    <p className='text-xs text-muted-foreground truncate'>{currentUser.email}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to='/dashboard?tab=profile' className='cursor-pointer'>
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignout} className='cursor-pointer'>
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link to='/sign-in'>
+              <Button
+                variant='outline'
+                className='bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0 hover:from-purple-700 hover:to-blue-700'
+              >
+                Sign In
+              </Button>
             </Link>
-            <Dropdown.Divider />
-            <Dropdown.Item onClick={handleSignout}>Sign out</Dropdown.Item>
-          </Dropdown>
-        ) : (
-          <Link to='/sign-in'>
-            <Button gradientDuoTone='purpleToBlue' outline>
-              Sign In
-            </Button>
+          )}
+
+          {/* Mobile Menu */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant='ghost' size='icon' className='md:hidden rounded-full'>
+                <Menu className='h-5 w-5' />
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <nav className='flex flex-col gap-4 mt-8'>
+                <Link
+                  to='/'
+                  className={`text-lg font-medium transition-colors hover:text-primary ${path === '/' ? 'text-primary' : 'text-muted-foreground'
+                    }`}
+                >
+                  Home
+                </Link>
+                <Link
+                  to='/about'
+                  className={`text-lg font-medium transition-colors hover:text-primary ${path === '/about' ? 'text-primary' : 'text-muted-foreground'
+                    }`}
+                >
+                  About
+                </Link>
+                <Link
+                  to='/projects'
+                  className={`text-lg font-medium transition-colors hover:text-primary ${path === '/projects' ? 'text-primary' : 'text-muted-foreground'
+                    }`}
+                >
+                  Projects
+                </Link>
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        {/* Desktop Navigation */}
+        <div className='hidden md:flex gap-8'>
+          <Link
+            to='/'
+            className={`font-medium transition-colors hover:text-primary ${path === '/' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+          >
+            Home
           </Link>
-        )}
-        <Navbar.Toggle />
-      </div>
-      <Navbar.Collapse>
-        <Navbar.Link active={path === '/'} as={'div'}>
-          <Link to='/'>Home</Link>
-        </Navbar.Link>
-        <Navbar.Link active={path === '/about'} as={'div'}>
-          <Link to='/about'>About</Link>
-        </Navbar.Link>
-        <Navbar.Link active={path === '/projects'} as={'div'}>
-          <Link to='/projects'>Projects</Link>
-        </Navbar.Link>
-      </Navbar.Collapse>
-    </Navbar>
+          <Link
+            to='/about'
+            className={`font-medium transition-colors hover:text-primary ${path === '/about' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+          >
+            About
+          </Link>
+          <Link
+            to='/projects'
+            className={`font-medium transition-colors hover:text-primary ${path === '/projects' ? 'text-primary' : 'text-muted-foreground'
+              }`}
+          >
+            Projects
+          </Link>
+        </div>
+      </nav>
+    </header>
   );
 }

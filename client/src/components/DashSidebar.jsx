@@ -1,4 +1,3 @@
-import { Sidebar } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import {
   HiAnnotation,
@@ -12,12 +11,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { signoutSuccess } from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
+import { Badge } from '@/components/ui/badge';
 
 const DashSidebar = () => {
   const location = useLocation();
   const [tab, setTab] = useState('');
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tabFromUrl = urlParams.get('tab');
@@ -38,74 +39,81 @@ const DashSidebar = () => {
       dispatch(signoutSuccess());
     }
   };
+
+  const NavItem = ({ to, icon: Icon, label, badge, active }) => (
+    <Link to={to}>
+      <div
+        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors cursor-pointer ${active
+            ? 'bg-primary text-primary-foreground'
+            : 'hover:bg-accent hover:text-accent-foreground'
+          }`}
+      >
+        <Icon className="h-5 w-5" />
+        <span className="flex-1">{label}</span>
+        {badge && (
+          <Badge variant={active ? 'secondary' : 'outline'} className="ml-auto">
+            {badge}
+          </Badge>
+        )}
+      </div>
+    </Link>
+  );
+
   return (
-    <Sidebar className="w-full md:w-56">
-      <Sidebar.Items>
-        <Sidebar.ItemGroup className="flex flex-col gap-1">
-          {currentUser && currentUser.isAdmin && (
-            <Link to="/dashboard?tab=dash">
-              <Sidebar.Item
-                active={tab === 'dash' || !tab}
-                icon={HiChartPie}
-                as="div"
-              >
-                Dashboard
-              </Sidebar.Item>
-            </Link>
-          )}
+    <aside className="w-full md:w-56 bg-background border-r">
+      <nav className="flex flex-col gap-1 p-4">
+        {currentUser && currentUser.isAdmin && (
+          <NavItem
+            to="/dashboard?tab=dash"
+            icon={HiChartPie}
+            label="Dashboard"
+            active={tab === 'dash' || !tab}
+          />
+        )}
 
-          <Link to="?tab=profile">
-            <Sidebar.Item
-              active={tab === 'profile'}
-              icon={HiUser}
-              label={currentUser?.isAdmin ? 'Admin' : 'User'}
-              labelColor="dark"
-              as="div"
-            >
-              Profile
-            </Sidebar.Item>
-          </Link>
+        <NavItem
+          to="?tab=profile"
+          icon={HiUser}
+          label="Profile"
+          badge={currentUser?.isAdmin ? 'Admin' : 'User'}
+          active={tab === 'profile'}
+        />
 
-          {currentUser?.isAdmin && (
-            <Link to="?tab=posts">
-              <Sidebar.Item active={tab === 'posts'} icon={HiDocument} as="div">
-                Posts
-              </Sidebar.Item>
-            </Link>
-          )}
-          {currentUser.isAdmin && (
-            <>
-              <Link to="/dashboard?tab=users">
-                <Sidebar.Item
-                  active={tab === 'users'}
-                  icon={HiOutlineUserGroup}
-                  as="div"
-                >
-                  Users
-                </Sidebar.Item>
-              </Link>
-              <Link to="/dashboard?tab=comments">
-                <Sidebar.Item
-                  active={tab === 'comments'}
-                  icon={HiAnnotation}
-                  as="div"
-                >
-                  Comments
-                </Sidebar.Item>
-              </Link>
-            </>
-          )}
+        {currentUser?.isAdmin && (
+          <NavItem
+            to="?tab=posts"
+            icon={HiDocument}
+            label="Posts"
+            active={tab === 'posts'}
+          />
+        )}
 
-          <Sidebar.Item
-            icon={HiArrowSmRight}
-            className="cursor-pointer"
-            onClick={handleSignout}
-          >
-            Sign Out
-          </Sidebar.Item>
-        </Sidebar.ItemGroup>
-      </Sidebar.Items>
-    </Sidebar>
+        {currentUser.isAdmin && (
+          <>
+            <NavItem
+              to="/dashboard?tab=users"
+              icon={HiOutlineUserGroup}
+              label="Users"
+              active={tab === 'users'}
+            />
+            <NavItem
+              to="/dashboard?tab=comments"
+              icon={HiAnnotation}
+              label="Comments"
+              active={tab === 'comments'}
+            />
+          </>
+        )}
+
+        <div
+          onClick={handleSignout}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors cursor-pointer hover:bg-destructive/10 hover:text-destructive"
+        >
+          <HiArrowSmRight className="h-5 w-5" />
+          <span>Sign Out</span>
+        </div>
+      </nav>
+    </aside>
   );
 };
 

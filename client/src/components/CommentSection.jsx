@@ -1,9 +1,19 @@
-import { Alert, Button, Modal, TextInput, Textarea } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Comment from './Comment';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 export default function CommentSection({ postId }) {
   const { currentUser } = useSelector((state) => state.user);
@@ -13,6 +23,7 @@ export default function CommentSection({ postId }) {
   const [showModal, setShowModal] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState(null);
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (comment.length > 200) {
@@ -48,7 +59,7 @@ export default function CommentSection({ postId }) {
         if (res.ok) {
           const data = await res.json();
           setComments(data);
-          console.log(data)
+          console.log(data);
         }
       } catch (error) {
         console.log(error.message);
@@ -72,10 +83,10 @@ export default function CommentSection({ postId }) {
           comments.map((comment) =>
             comment._id === commentId
               ? {
-                  ...comment,
-                  likes: data.likes,
-                  numberOfLikes: data.likes.length,
-                }
+                ...comment,
+                likes: data.likes,
+                numberOfLikes: data.likes.length,
+              }
               : comment
           )
         );
@@ -111,10 +122,11 @@ export default function CommentSection({ postId }) {
       console.log(error.message);
     }
   };
+
   return (
     <div className='max-w-2xl mx-auto w-full p-3'>
       {currentUser ? (
-        <div className='flex items-center gap-1 my-5 text-gray-500 text-sm'>
+        <div className='flex items-center gap-1 my-5 text-muted-foreground text-sm'>
           <p>Signed in as:</p>
           <img
             className='h-5 w-5 object-cover rounded-full'
@@ -143,22 +155,26 @@ export default function CommentSection({ postId }) {
         >
           <Textarea
             placeholder='Add a comment...'
-            rows='3'
-            maxLength='200'
+            rows={3}
+            maxLength={200}
             onChange={(e) => setComment(e.target.value)}
             value={comment}
           />
           <div className='flex justify-between items-center mt-5'>
-            <p className='text-gray-500 text-xs'>
+            <p className='text-muted-foreground text-xs'>
               {200 - comment.length} characters remaining
             </p>
-            <Button outline gradientDuoTone='purpleToBlue' type='submit'>
+            <Button
+              variant='outline'
+              className='bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 border-0'
+              type='submit'
+            >
               Submit
             </Button>
           </div>
           {commentError && (
-            <Alert color='failure' className='mt-5'>
-              {commentError}
+            <Alert variant='destructive' className='mt-5'>
+              <AlertDescription>{commentError}</AlertDescription>
             </Alert>
           )}
         </form>
@@ -169,7 +185,7 @@ export default function CommentSection({ postId }) {
         <>
           <div className='text-sm my-5 flex items-center gap-1'>
             <p>Comments</p>
-            <div className='border border-gray-400 py-1 px-2 rounded-sm'>
+            <div className='border border-border py-1 px-2 rounded-sm'>
               <p>{comments.length}</p>
             </div>
           </div>
@@ -187,33 +203,28 @@ export default function CommentSection({ postId }) {
           ))}
         </>
       )}
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        popup
-        size='md'
-      >
-        <Modal.Header />
-        <Modal.Body>
-          <div className='text-center'>
-            <HiOutlineExclamationCircle className='h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
-            <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>
-              Are you sure you want to delete this comment?
-            </h3>
-            <div className='flex justify-center gap-4'>
-              <Button
-                color='failure'
-                onClick={() => handleDelete(commentToDelete)}
-              >
-                Yes, I'm sure
-              </Button>
-              <Button color='gray' onClick={() => setShowModal(false)}>
-                No, cancel
-              </Button>
+
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className='sm:max-w-md'>
+          <DialogHeader>
+            <div className='mx-auto'>
+              <HiOutlineExclamationCircle className='h-14 w-14 text-muted-foreground' />
             </div>
-          </div>
-        </Modal.Body>
-      </Modal>
+            <DialogTitle className='text-center'>Delete Comment</DialogTitle>
+            <DialogDescription className='text-center'>
+              Are you sure you want to delete this comment?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className='flex gap-2 sm:justify-center'>
+            <Button variant='destructive' onClick={() => handleDelete(commentToDelete)}>
+              Yes, I'm sure
+            </Button>
+            <Button variant='outline' onClick={() => setShowModal(false)}>
+              No, cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import { Alert, Button, Modal, TextInput } from 'flowbite-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { supabase } from '../supabaseClient';
@@ -15,6 +14,17 @@ import {
 } from '../redux/user/userSlice';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const DashProfile = () => {
   const { currentUser, error, loading } = useSelector((state) => state.user);
@@ -162,7 +172,7 @@ const DashProfile = () => {
     }
   };
 
-  console.log(currentUser,'coba')
+  console.log(currentUser, 'coba');
 
   return (
     <div className="max-w-lg mx-auto w-full">
@@ -201,33 +211,34 @@ const DashProfile = () => {
           <img
             src={imageFileUrl || currentUser.profilePicture}
             alt="Profile"
-            className={`rounded-full w-full h-full border-8 object-cover border-[lightgray] ${
-              uploadProgress && uploadProgress < 100
+            className={`rounded-full w-full h-full border-8 object-cover border-[lightgray] ${uploadProgress && uploadProgress < 100
                 ? 'opacity-30 transition-opacity duration-300 ease-in-out'
                 : ''
-            }`}
+              }`}
           />
         </div>
 
         {imageFileUploadError && (
-          <Alert color="failure">{imageFileUploadError}</Alert>
+          <Alert variant="destructive">
+            <AlertDescription>{imageFileUploadError}</AlertDescription>
+          </Alert>
         )}
 
-        <TextInput
+        <Input
           type="text"
           id="username"
           placeholder="Username"
           defaultValue={currentUser.username}
           onChange={handleChange}
         />
-        <TextInput
+        <Input
           type="email"
           id="email"
           placeholder="Email"
           defaultValue={currentUser.email}
           onChange={handleChange}
         />
-        <TextInput
+        <Input
           type="password"
           id="password"
           placeholder="Password"
@@ -236,66 +247,66 @@ const DashProfile = () => {
 
         <Button
           type="submit"
-          gradientDuoTone="purpleToBlue"
-          outline
+          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          variant="outline"
           disabled={loading || uploading}
         >
           {loading ? 'Loading...' : 'Update Profile'}
         </Button>
-       
-          <Link to={'/create-post'}>
-            <Button
-              type="button"
-              gradientDuoTone={'purpleToPink'}
-              className="w-full"
-              outline
-            >
-              Create a post
-            </Button>
-          </Link>
-        
+
+        <Link to={'/create-post'}>
+          <Button
+            type="button"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+            variant="outline"
+          >
+            Create a post
+          </Button>
+        </Link>
       </form>
 
-      <div className="text-red-500 flex justify-between mt-5">
+      <div className="text-red-500 flex justify-between mt-5 cursor-pointer">
         <span onClick={() => setShowModal(true)}>Delete Account</span>
         <span onClick={handleSignout}>Sign Out</span>
       </div>
 
       {updateUserSuccess && (
-        <Alert color="success" className="mt-5">
-          {updateUserSuccess}
+        <Alert className="mt-5">
+          <AlertDescription>{updateUserSuccess}</AlertDescription>
         </Alert>
       )}
       {updateUserError && (
-        <Alert color="failure" className="mt-5">
-          {updateUserError}
+        <Alert variant="destructive" className="mt-5">
+          <AlertDescription>{updateUserError}</AlertDescription>
         </Alert>
       )}
       {error && (
-        <Alert color="failure" className="mt-5">
-          {error}
+        <Alert variant="destructive" className="mt-5">
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      <Modal show={showModal} onClose={() => setShowModal(false)} popup size="md">
-        <Modal.Header />
-        <Modal.Body>
-          <div className="text-center">
-            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 mb-4 mx-auto" />
-            <h3 className="mb-5 text-lg text-gray-500">
-              Are you sure you want to delete your account?
-            </h3>
-            <div className="flex justify-center gap-4">
-              <Button color="failure" onClick={handleDeleteUser}>
-                Yes, I'm sure
-              </Button>
-              <Button color="gray" onClick={() => setShowModal(false)}>
-                No, cancel
-              </Button>
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto">
+              <HiOutlineExclamationCircle className="h-14 w-14 text-muted-foreground" />
             </div>
-          </div>
-        </Modal.Body>
-      </Modal>
+            <DialogTitle className="text-center">Delete Account</DialogTitle>
+            <DialogDescription className="text-center">
+              Are you sure you want to delete your account?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 sm:justify-center">
+            <Button variant="destructive" onClick={handleDeleteUser}>
+              Yes, I'm sure
+            </Button>
+            <Button variant="outline" onClick={() => setShowModal(false)}>
+              No, cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
