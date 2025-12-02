@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import CallToAction from '../components/CallToAction';
 import CommentSection from '../components/CommentSection';
 import PostCard from '../components/PostCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
+import { useSelector } from 'react-redux';
 
 export default function PostPage() {
   const { postSlug } = useParams();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [post, setPost] = useState(null);
   const [recentPosts, setRecentPosts] = useState(null);
+  const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -53,6 +56,32 @@ export default function PostPage() {
     }
   }, []);
 
+  const handleDeletePost = async () => {
+    if (!confirm('Are you sure you want to delete this post?')) {
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `/api/post/deletepost/${post._id}/${currentUser._id}`,
+        {
+          method: 'DELETE',
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        console.error('Error deleting post:', data.message);
+        alert(data.message || 'Failed to delete post');
+      } else {
+        console.log('Post deleted successfully');
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Something went wrong');
+    }
+  };
+
   if (loading)
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -88,6 +117,19 @@ export default function PostPage() {
         className="p-3 max-w-2xl mx-auto w-full post-content"
         dangerouslySetInnerHTML={{ __html: post && post.content }}
       ></div>
+
+      {/* Edit/Delete Buttons */}
+      {currentUser && post && (currentUser._id === post.userId || currentUser.isAdmin) && (
+        <div className="flex gap-4 justify-center my-5 max-w-2xl mx-auto">
+          <Link to={`/update-post/${post._id}`}>
+            <Button>Edit Post</Button>
+          </Link>
+          <Button variant="destructive" onClick={handleDeletePost}>
+            Delete Post
+          </Button>
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto w-full">
         <CallToAction />
       </div>

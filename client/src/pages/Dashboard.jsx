@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import DashSidebar from '../components/DashSidebar';
 import DashProfile from '../components/DashProfile';
 import DashPosts from '../components/DashPosts';
+import DashMyPosts from '../components/DashMyPosts';
 import DashUsers from '../components/DashUsers';
 import DashComments from '../components/DashComments';
 import DashboardComp from '../components/DashboardComp';
@@ -27,7 +28,9 @@ const Dashboard = () => {
       </div>
       <div className="flex-1 w-full">
         {tab === 'profile' && <DashProfile />}
-        {/* posts */}
+        {/* my posts */}
+        {tab === 'myposts' && <DashMyPosts />}
+        {/* all posts (admin only) */}
         {tab === 'posts' && <DashPosts />}
         {/* users */}
         {tab === 'users' && <DashUsers />}

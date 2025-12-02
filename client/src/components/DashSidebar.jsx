@@ -3,6 +3,7 @@ import {
   HiAnnotation,
   HiArrowSmRight,
   HiChartPie,
+  HiDocumentText,
   HiDocument,
   HiOutlineUserGroup,
   HiUser,
@@ -44,8 +45,8 @@ const DashSidebar = () => {
     <Link to={to}>
       <div
         className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors cursor-pointer ${active
-            ? 'bg-primary text-primary-foreground'
-            : 'hover:bg-accent hover:text-accent-foreground'
+          ? 'bg-primary text-primary-foreground'
+          : 'hover:bg-accent hover:text-accent-foreground'
           }`}
       >
         <Icon className="h-5 w-5" />
@@ -79,11 +80,20 @@ const DashSidebar = () => {
           active={tab === 'profile'}
         />
 
+        {/* My Posts - for all users */}
+        <NavItem
+          to="?tab=myposts"
+          icon={HiDocument}
+          label="My Posts"
+          active={tab === 'myposts'}
+        />
+
+        {/* All Posts - admin only */}
         {currentUser?.isAdmin && (
           <NavItem
             to="?tab=posts"
-            icon={HiDocument}
-            label="Posts"
+            icon={HiDocumentText}
+            label="All Posts"
             active={tab === 'posts'}
           />
         )}

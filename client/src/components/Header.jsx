@@ -131,6 +131,16 @@ export default function Header() {
                     Profile
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to='/create-post' className='cursor-pointer'>
+                    Create Post
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to='/dashboard?tab=myposts' className='cursor-pointer'>
+                    My Posts
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignout} className='cursor-pointer'>
                   Sign out
