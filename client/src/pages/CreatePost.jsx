@@ -1,4 +1,3 @@
-import { Alert, Button, FileInput, Select, TextInput } from 'flowbite-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useState, useEffect } from 'react';
@@ -6,6 +5,16 @@ import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export default function CreatePost() {
   const [imageFile, setImageFile] = useState(null);
@@ -113,7 +122,7 @@ export default function CreatePost() {
       <h1 className='text-center text-3xl my-7 font-semibold'>Create a post</h1>
       <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
         <div className='flex flex-col gap-4 sm:flex-row justify-between'>
-          <TextInput
+          <Input
             type='text'
             placeholder='Title'
             required
@@ -124,20 +133,36 @@ export default function CreatePost() {
             }
           />
           <Select
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
+            onValueChange={(value) =>
+              setFormData({ ...formData, category: value })
             }
           >
-            <option value='uncategorized'>Select a category</option>
-            <option value='javascript'>JavaScript</option>
-            <option value='reactjs'>React.js</option>
-            <option value='nextjs'>Next.js</option>
+            <SelectTrigger className="w-full sm:w-[200px]">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="uncategorized">Select a category</SelectItem>
+              <SelectItem value="javascript">JavaScript</SelectItem>
+              <SelectItem value="reactjs">React.js</SelectItem>
+              <SelectItem value="nextjs">Next.js</SelectItem>
+            </SelectContent>
           </Select>
         </div>
 
         <div className='flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3'>
-          <FileInput type='file' accept='image/*' onChange={handleImageChange} />
-          <Button type='button' gradientDuoTone='purpleToBlue' size='sm' outline disabled={uploading}>
+          <input
+            type='file'
+            accept='image/*'
+            onChange={handleImageChange}
+            className="text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+          />
+          <Button
+            type='button'
+            variant='outline'
+            size='sm'
+            className='bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 border-0'
+            disabled={uploading}
+          >
             {uploadProgress ? (
               <div className='w-16 h-16'>
                 <CircularProgressbar
@@ -152,14 +177,16 @@ export default function CreatePost() {
         </div>
 
         {imageFileUploadError && (
-          <Alert color='failure'>{imageFileUploadError}</Alert>
+          <Alert variant="destructive">
+            <AlertDescription>{imageFileUploadError}</AlertDescription>
+          </Alert>
         )}
 
         {imageFileUrl && (
           <img
             src={imageFileUrl}
             alt='upload'
-            className='w-full h-72 object-cover'
+            className='w-full h-72 object-cover rounded-md'
           />
         )}
 
@@ -175,15 +202,15 @@ export default function CreatePost() {
 
         <Button
           type='submit'
-          gradientDuoTone='purpleToPink'
+          className='bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
           disabled={uploading}
         >
           Publish
         </Button>
 
         {publishError && (
-          <Alert color='failure' className='mt-5'>
-            {publishError}
+          <Alert variant="destructive" className='mt-5'>
+            <AlertDescription>{publishError}</AlertDescription>
           </Alert>
         )}
       </form>

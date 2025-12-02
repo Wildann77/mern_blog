@@ -1,4 +1,3 @@
-import { theme } from 'flowbite-react';
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {

@@ -1,9 +1,11 @@
-import { Button, Spinner } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import CallToAction from '../components/CallToAction';
 import CommentSection from '../components/CommentSection';
 import PostCard from '../components/PostCard';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Loader2 } from 'lucide-react';
 
 export default function PostPage() {
   const { postSlug } = useParams();
@@ -54,9 +56,10 @@ export default function PostPage() {
   if (loading)
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <Spinner size="xl" />
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
+
   return (
     <main className="p-3 flex flex-col max-w-6xl mx-auto min-h-screen">
       <h1 className="text-3xl mt-10 p-3 text-center font-serif max-w-2xl mx-auto lg:text-4xl">
@@ -66,16 +69,16 @@ export default function PostPage() {
         to={`/search?category=${post && post.category}`}
         className="self-center mt-5"
       >
-        <Button color="gray" pill size="xs">
+        <Badge variant="secondary" className="px-4 py-2 rounded-full">
           {post && post.category}
-        </Button>
+        </Badge>
       </Link>
       <img
         src={post && post.image}
         alt={post && post.title}
-        className="mt-10 p-3 max-h-[600px] w-full object-cover"
+        className="mt-10 p-3 max-h-[600px] w-full object-cover rounded-lg"
       />
-      <div className="flex justify-between p-3 border-b border-slate-500 mx-auto w-full max-w-2xl text-xs">
+      <div className="flex justify-between p-3 border-b border-border mx-auto w-full max-w-2xl text-xs">
         <span>{post && new Date(post.createdAt).toLocaleDateString()}</span>
         <span className="italic">
           {post && (post.content.length / 1000).toFixed(0)} mins read

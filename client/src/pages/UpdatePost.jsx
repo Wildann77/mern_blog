@@ -1,4 +1,3 @@
-import { Alert, Button, FileInput, Select, TextInput } from 'flowbite-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useState, useEffect } from 'react';
@@ -7,6 +6,16 @@ import 'react-circular-progressbar/dist/styles.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useSelector } from 'react-redux';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export default function UpdatePost() {
   const [imageFile, setImageFile] = useState(null);
@@ -33,15 +42,6 @@ export default function UpdatePost() {
           setIsLoadingPost(false);
           return;
         }
-
-        // const post = data.posts[0];
-        // setFormData({
-        //   _id: post._id,
-        //   title: post.title || '',
-        //   content: post.content || '',
-        //   category: post.category || '',
-        //   image: post.image || '',
-        // });
 
         const post = data.posts[0];
         setFormData(post);
@@ -177,7 +177,7 @@ export default function UpdatePost() {
       <h1 className="text-center text-3xl my-7 font-semibold">Update post</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
-          <TextInput
+          <Input
             type="text"
             placeholder="Title"
             required
@@ -186,31 +186,37 @@ export default function UpdatePost() {
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, title: e.target.value }))
             }
-            value={formData.title}
+            value={formData.title || ''}
           />
           <Select
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, category: e.target.value }))
-            }
             value={formData.category || 'uncategorized'}
-            required
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, category: value }))
+            }
           >
-            <option value="" disabled>
-              Select a category
-            </option>
-            <option value="javascript">JavaScript</option>
-            <option value="reactjs">React.js</option>
-            <option value="nextjs">Next.js</option>
+            <SelectTrigger className="w-full sm:w-[200px]">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="javascript">JavaScript</SelectItem>
+              <SelectItem value="reactjs">React.js</SelectItem>
+              <SelectItem value="nextjs">Next.js</SelectItem>
+            </SelectContent>
           </Select>
         </div>
 
         <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3">
-          <FileInput type="file" accept="image/*" onChange={handleImageChange} />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+          />
           <Button
             type="button"
-            gradientDuoTone="purpleToBlue"
+            variant="outline"
             size="sm"
-            outline
+            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 border-0"
             disabled={uploading}
           >
             {uploadProgress ? (
@@ -227,14 +233,16 @@ export default function UpdatePost() {
         </div>
 
         {imageFileUploadError && (
-          <Alert color="failure">{imageFileUploadError}</Alert>
+          <Alert variant="destructive">
+            <AlertDescription>{imageFileUploadError}</AlertDescription>
+          </Alert>
         )}
 
         {imageFileUrl && (
           <img
             src={imageFileUrl}
             alt="upload"
-            className="w-full h-72 object-cover"
+            className="w-full h-72 object-cover rounded-md"
           />
         )}
 
@@ -247,13 +255,17 @@ export default function UpdatePost() {
           onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
         />
 
-        <Button type="submit" gradientDuoTone="purpleToPink" disabled={uploading}>
+        <Button
+          type="submit"
+          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+          disabled={uploading}
+        >
           Update Post
         </Button>
 
         {publishError && (
-          <Alert color="failure" className="mt-5">
-            {publishError}
+          <Alert variant="destructive" className="mt-5">
+            <AlertDescription>{publishError}</AlertDescription>
           </Alert>
         )}
       </form>
