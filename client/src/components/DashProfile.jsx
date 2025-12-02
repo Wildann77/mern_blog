@@ -175,7 +175,7 @@ const DashProfile = () => {
   console.log(currentUser, 'coba');
 
   return (
-    <div className="max-w-lg mx-auto w-full">
+    <div className="max-w-lg mx-auto w-full p-4 md:p-8">
       <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
@@ -212,8 +212,8 @@ const DashProfile = () => {
             src={imageFileUrl || currentUser.profilePicture}
             alt="Profile"
             className={`rounded-full w-full h-full border-8 object-cover border-[lightgray] ${uploadProgress && uploadProgress < 100
-                ? 'opacity-30 transition-opacity duration-300 ease-in-out'
-                : ''
+              ? 'opacity-30 transition-opacity duration-300 ease-in-out'
+              : ''
               }`}
           />
         </div>

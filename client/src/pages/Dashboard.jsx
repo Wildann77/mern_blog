@@ -18,21 +18,24 @@ const Dashboard = () => {
       setTab(tabFromUrl);
     }
   }, [location.search]);
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       <div className="md:w-56">
         {/* Sidebar */}
         <DashSidebar />
       </div>
-      <div className="">{tab === 'profile' && <DashProfile />}</div>
-      {/* posts */}
-      <div className="">{tab === 'posts' && <DashPosts />}</div>
-      {/* users */}
-      <div className="">{tab === 'users' && <DashUsers />}</div>
-      {/* comments */}
-      <div className="">{tab === 'comments' && <DashComments />}</div>
-      {/* dash comp */}
-      <div className=""> {tab === 'dash' && <DashboardComp />}</div>
+      <div className="flex-1 w-full">
+        {tab === 'profile' && <DashProfile />}
+        {/* posts */}
+        {tab === 'posts' && <DashPosts />}
+        {/* users */}
+        {tab === 'users' && <DashUsers />}
+        {/* comments */}
+        {tab === 'comments' && <DashComments />}
+        {/* dash comp */}
+        {tab === 'dash' && <DashboardComp />}
+      </div>
     </div>
   );
 };
