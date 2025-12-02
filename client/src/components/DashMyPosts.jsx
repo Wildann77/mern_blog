@@ -34,6 +34,7 @@ export default function DashMyPosts() {
         totalPosts: 0,
         lastMonthPosts: 0,
     });
+    const [deleteError, setDeleteError] = useState(null);
 
     useEffect(() => {
         const fetchMyPosts = async () => {
