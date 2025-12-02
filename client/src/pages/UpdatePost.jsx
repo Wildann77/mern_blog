@@ -250,7 +250,8 @@ export default function UpdatePost() {
           theme="snow"
           value={formData.content || ''}
           placeholder="Write something..."
-          className="h-72 sm:h-96 md:h-[500px] lg:h-[600px] mb-12"
+          className="w-full h-72 sm:h-96 md:h-[500px] lg:h-[600px] mb-12"
+          style={{ width: '100%' }}
           required
           onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
         />

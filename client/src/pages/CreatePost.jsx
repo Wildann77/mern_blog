@@ -118,7 +118,7 @@ export default function CreatePost() {
   };
 
   return (
-    <div className='p-3 max-w-3xl mx-auto min-h-screen'>
+    <div className='p-3 max-w-[98%] mx-auto min-h-screen'>
       <h1 className='text-center text-3xl my-7 font-semibold'>Create a post</h1>
       <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
         <div className='flex flex-col gap-4 sm:flex-row justify-between'>
@@ -193,7 +193,8 @@ export default function CreatePost() {
         <ReactQuill
           theme='snow'
           placeholder='Write something...'
-          className='h-72 sm:h-96 md:h-[500px] lg:h-[600px] mb-12'
+          className='w-full h-72 sm:h-96 md:h-[500px] lg:h-[600px] mb-12'
+          style={{ width: '100%' }}
           required
           onChange={(value) => {
             setFormData({ ...formData, content: value });
