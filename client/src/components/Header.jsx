@@ -61,7 +61,7 @@ export default function Header() {
   };
 
   return (
-    <header className='border-b-2'>
+    <header className='border-b-2 sticky top-0 bg-background z-50'>
       <nav className='max-w-screen-xl mx-auto px-4 py-3 flex items-center justify-between'>
         <Link
           to='/'

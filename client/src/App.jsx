@@ -18,7 +18,7 @@ import Search from './pages/Search';
 
 const App = () => {
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       <BrowserRouter>
         <ScrollToTop />
         <Header />
