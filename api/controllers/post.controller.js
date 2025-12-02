@@ -107,3 +107,37 @@ export const updatePost = async (req, res, next) => {
     next(error);
   }
 };
+
+// Get current user's posts only
+export const getMyPosts = async (req, res, next) => {
+  try {
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    const limit = parseInt(req.query.limit) || 9;
+    const sortDirection = req.query.order === 'asc' ? 1 : -1;
+
+    const posts = await Post.find({ userId: req.user.id })
+      .sort({ updatedAt: sortDirection })
+      .skip(startIndex)
+      .limit(limit);
+    const totalPosts = await Post.countDocuments({ userId: req.user.id });
+
+    const now = new Date();
+    const oneMonthAgo = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      now.getDate()
+    );
+    const lastMonthPosts = await Post.countDocuments({
+      userId: req.user.id,
+      createdAt: { $gte: oneMonthAgo },
+    });
+
+    res.status(200).json({
+      posts,
+      totalPosts,
+      lastMonthPosts,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
