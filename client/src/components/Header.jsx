@@ -107,13 +107,11 @@ export default function Header() {
 
           {currentUser ? (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant='ghost' className='rounded-full h-10 w-10 p-0'>
-                  <Avatar>
-                    <AvatarImage src={currentUser.profilePicture} alt={currentUser.username} />
-                    <AvatarFallback>{currentUser.username.charAt(0).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                </Button>
+              <DropdownMenuTrigger className='rounded-full h-10 w-10 p-0 outline-none border-none bg-transparent hover:opacity-80 transition-opacity cursor-pointer flex items-center justify-center'>
+                <Avatar>
+                  <AvatarImage src={currentUser.profilePicture} alt={currentUser.username} />
+                  <AvatarFallback>{currentUser.username.charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end' className='w-56'>
                 <DropdownMenuLabel>
@@ -123,6 +121,11 @@ export default function Header() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to='/dashboard' className='cursor-pointer'>
+                    Dashboard
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to='/dashboard?tab=profile' className='cursor-pointer'>
                     Profile
