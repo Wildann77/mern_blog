@@ -62,7 +62,7 @@ const SignUp = () => {
         <div className="flex-1">
           <Link to="/" className="font-bold dark:text-white text-4xl">
             <span className="px-2 py-1 bg-primary text-primary-foreground rounded-lg">
-              BangBoy
+              Bangboy's
             </span>
             Blog
           </Link>

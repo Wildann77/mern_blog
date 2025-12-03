@@ -20,7 +20,7 @@ const FooterCom = () => {
               className="self-center whitespace-nowrap text-lg sm:text-xl font-semibold dark:text-white"
             >
               <span className="px-2 py-1 bg-primary text-primary-foreground rounded-lg">
-                BangBoy
+                Bangboy's
               </span>
               Blog
             </Link>
@@ -46,7 +46,7 @@ const FooterCom = () => {
                     rel="noopener noreferrer"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    BangBoy Blog
+                    Bangboy's Blog
                   </a>
                 </li>
               </ul>
@@ -106,7 +106,7 @@ const FooterCom = () => {
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()}{' '}
             <a href="3" className="hover:underline">
-              bangboy blog
+              Bangboy's blog
             </a>
             . All Rights Reserved.
           </p>

@@ -68,7 +68,7 @@ export default function Header() {
           className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold'
         >
           <span className='px-2 py-1 bg-primary text-primary-foreground rounded-lg'>
-            Sahand's
+            Bangboy's's
           </span>
           {' '}Blog
         </Link>
