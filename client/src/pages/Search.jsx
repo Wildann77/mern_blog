@@ -150,8 +150,6 @@ export default function Search() {
           </div>
           <Button
             type="submit"
-            variant="outline"
-            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 border-0"
           >
             Apply Filters
           </Button>
@@ -173,7 +171,7 @@ export default function Search() {
             <Button
               variant="link"
               onClick={handleShowMore}
-              className="text-teal-500 text-lg p-7 w-full"
+              className="text-primary text-lg p-7 w-full"
             >
               Show More
             </Button>

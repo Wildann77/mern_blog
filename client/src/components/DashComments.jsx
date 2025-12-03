@@ -114,7 +114,7 @@ export default function DashComments() {
                           setShowModal(true);
                           setCommentIdToDelete(comment._id);
                         }}
-                        className="font-medium text-red-500 hover:underline cursor-pointer"
+                        className="font-medium text-destructive hover:underline cursor-pointer"
                       >
                         Delete
                       </span>
@@ -128,7 +128,7 @@ export default function DashComments() {
             <Button
               variant="link"
               onClick={handleShowMore}
-              className="w-full text-teal-500 py-7"
+              className="w-full text-primary py-7"
             >
               Show more
             </Button>

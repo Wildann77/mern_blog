@@ -61,16 +61,16 @@ export default function Header() {
   };
 
   return (
-    <header className='border-b-2 sticky top-0 bg-background z-50'>
+    <header className='border-b sticky top-0 bg-background z-50'>
       <nav className='max-w-screen-xl mx-auto px-4 py-3 flex items-center justify-between'>
         <Link
           to='/'
-          className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white'
+          className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold'
         >
-          <span className='px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white'>
+          <span className='px-2 py-1 bg-primary text-primary-foreground rounded-lg'>
             Sahand's
           </span>
-          Blog
+          {' '}Blog
         </Link>
 
         <form onSubmit={handleSubmit} className='hidden lg:block'>
@@ -89,7 +89,7 @@ export default function Header() {
         <Button
           variant='ghost'
           size='icon'
-          className='lg:hidden rounded-full'
+          className='lg:hidden'
           onClick={() => navigate('/search')}
         >
           <AiOutlineSearch className='h-5 w-5' />
@@ -99,7 +99,7 @@ export default function Header() {
           <Button
             variant='ghost'
             size='icon'
-            className='hidden sm:inline-flex rounded-full'
+            className='hidden sm:inline-flex'
             onClick={() => dispatch(toggleTheme())}
           >
             {theme === 'light' ? <FaSun className='h-5 w-5' /> : <FaMoon className='h-5 w-5' />}
@@ -149,10 +149,7 @@ export default function Header() {
             </DropdownMenu>
           ) : (
             <Link to='/sign-in'>
-              <Button
-                variant='outline'
-                className='bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0 hover:from-purple-700 hover:to-blue-700'
-              >
+              <Button>
                 Sign In
               </Button>
             </Link>
@@ -161,7 +158,7 @@ export default function Header() {
           {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant='ghost' size='icon' className='md:hidden rounded-full'>
+              <Button variant='ghost' size='icon' className='md:hidden'>
                 <Menu className='h-5 w-5' />
               </Button>
             </SheetTrigger>

@@ -61,7 +61,7 @@ const SignIn = () => {
         {/* left */}
         <div className="flex-1">
           <Link to="/" className="font-bold dark:text-white text-4xl">
-            <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
+            <span className="px-2 py-1 bg-primary text-primary-foreground rounded-lg">
               BangBoy
             </span>
             Blog
@@ -92,7 +92,6 @@ const SignIn = () => {
               />
             </div>
             <Button
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
               type="submit"
               disabled={loading}
             >
@@ -110,7 +109,7 @@ const SignIn = () => {
           <div className="flex gap-2 text-sm mt-5">
             <span>
               Don't have an account?{' '}
-              <Link to="/sign-up" className="text-blue-500 hover:underline">
+              <Link to="/sign-up" className="text-primary hover:underline">
                 Sign Up
               </Link>
             </span>

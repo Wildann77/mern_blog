@@ -59,7 +59,6 @@ export default function CommentSection({ postId }) {
         if (res.ok) {
           const data = await res.json();
           setComments(data);
-          console.log(data);
         }
       } catch (error) {
         console.log(error.message);
@@ -115,7 +114,6 @@ export default function CommentSection({ postId }) {
         method: 'DELETE',
       });
       if (res.ok) {
-        const data = await res.json();
         setComments(comments.filter((comment) => comment._id !== commentId));
       }
     } catch (error) {
@@ -135,15 +133,15 @@ export default function CommentSection({ postId }) {
           />
           <Link
             to={'/dashboard?tab=profile'}
-            className='text-xs text-cyan-600 hover:underline'
+            className='text-xs text-primary hover:underline'
           >
             @{currentUser.username}
           </Link>
         </div>
       ) : (
-        <div className='text-sm text-teal-500 my-5 flex gap-1'>
+        <div className='text-sm text-muted-foreground my-5 flex gap-1'>
           You must be signed in to comment.
-          <Link className='text-blue-500 hover:underline' to={'/sign-in'}>
+          <Link className='text-primary hover:underline' to={'/sign-in'}>
             Sign In
           </Link>
         </div>
@@ -151,7 +149,7 @@ export default function CommentSection({ postId }) {
       {currentUser && (
         <form
           onSubmit={handleSubmit}
-          className='border border-teal-500 rounded-md p-3'
+          className='border rounded-md p-3'
         >
           <Textarea
             placeholder='Add a comment...'
@@ -164,11 +162,7 @@ export default function CommentSection({ postId }) {
             <p className='text-muted-foreground text-xs'>
               {200 - comment.length} characters remaining
             </p>
-            <Button
-              variant='outline'
-              className='bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 border-0'
-              type='submit'
-            >
+            <Button type='submit'>
               Submit
             </Button>
           </div>

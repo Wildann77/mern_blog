@@ -55,7 +55,7 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
     <div className="flex p-4 border-b dark:border-gray-600 text-sm">
       <div className="flex-shrink-0 mr-3">
         <img
-          className="w-10 h-10 rounded-full bg-gray-200"
+          className="w-10 h-10 rounded-full bg-muted"
           src={user.profilePicture}
           alt={user.username}
         />
@@ -80,7 +80,6 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
               <Button
                 type="button"
                 size="sm"
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 onClick={handleSave}
               >
                 Save
@@ -102,14 +101,14 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
               <button
                 type="button"
                 onClick={() => onLike(comment._id)}
-                className={`text-gray-400 hover:text-blue-500 ${currentUser &&
+                className={`text-muted-foreground hover:text-primary ${currentUser &&
                   comment.likes.includes(currentUser._id) &&
-                  '!text-blue-500'
+                  '!text-primary'
                   }`}
               >
                 <FaThumbsUp className="text-sm" />
               </button>
-              <p className="text-gray-400">
+              <p className="text-muted-foreground">
                 {comment.numberOfLikes > 0 &&
                   comment.numberOfLikes +
                   ' ' +
@@ -121,14 +120,14 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
                     <button
                       type="button"
                       onClick={handleEdit}
-                      className="text-gray-400 hover:text-blue-500"
+                      className="text-muted-foreground hover:text-primary"
                     >
                       Edit
                     </button>
                     <button
                       type="button"
                       onClick={() => onDelete(comment._id)}
-                      className="text-gray-400 hover:text-red-500"
+                      className="text-muted-foreground hover:text-destructive"
                     >
                       Delete
                     </button>

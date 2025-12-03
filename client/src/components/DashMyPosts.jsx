@@ -182,7 +182,7 @@ export default function DashMyPosts() {
                                                 <img
                                                     src={post.image}
                                                     alt={post.title}
-                                                    className='w-20 h-10 object-cover bg-gray-500 rounded'
+                                                    className='w-20 h-10 object-cover bg-muted rounded'
                                                 />
                                             </Link>
                                         </TableCell>
@@ -201,14 +201,14 @@ export default function DashMyPosts() {
                                                     setShowModal(true);
                                                     setPostIdToDelete(post._id);
                                                 }}
-                                                className='font-medium text-red-500 hover:underline cursor-pointer'
+                                                className='font-medium text-destructive hover:underline cursor-pointer'
                                             >
                                                 Delete
                                             </span>
                                         </TableCell>
                                         <TableCell>
                                             <Link
-                                                className='text-teal-500 hover:underline'
+                                                className='text-primary hover:underline'
                                                 to={`/update-post/${post._id}`}
                                             >
                                                 Edit
@@ -223,7 +223,7 @@ export default function DashMyPosts() {
                         <Button
                             variant='link'
                             onClick={handleShowMore}
-                            className='w-full text-teal-500 py-7'
+                            className='w-full text-primary py-7'
                         >
                             Show more
                         </Button>

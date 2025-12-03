@@ -211,7 +211,7 @@ const DashProfile = () => {
           <img
             src={imageFileUrl || currentUser.profilePicture}
             alt="Profile"
-            className={`rounded-full w-full h-full border-8 object-cover border-[lightgray] ${uploadProgress && uploadProgress < 100
+            className={`rounded-full w-full h-full border-4 object-cover border-muted ${uploadProgress && uploadProgress < 100
               ? 'opacity-30 transition-opacity duration-300 ease-in-out'
               : ''
               }`}
@@ -247,8 +247,7 @@ const DashProfile = () => {
 
         <Button
           type="submit"
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-          variant="outline"
+          className="w-full"
           disabled={loading || uploading}
         >
           {loading ? 'Loading...' : 'Update Profile'}
@@ -257,7 +256,7 @@ const DashProfile = () => {
         <Link to={'/create-post'}>
           <Button
             type="button"
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+            className="w-full"
             variant="outline"
           >
             Create a post
@@ -265,7 +264,7 @@ const DashProfile = () => {
         </Link>
       </form>
 
-      <div className="text-red-500 flex justify-between mt-5 cursor-pointer">
+      <div className="text-destructive flex justify-between mt-5 cursor-pointer">
         <span onClick={() => setShowModal(true)}>Delete Account</span>
         <span onClick={handleSignout}>Sign Out</span>
       </div>

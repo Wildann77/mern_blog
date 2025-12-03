@@ -205,7 +205,7 @@ export default function UpdatePost() {
           </Select>
         </div>
 
-        <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3">
+        <div className="flex gap-4 items-center justify-between border-4 border-dashed p-3">
           <input
             type="file"
             accept="image/*"
@@ -216,7 +216,6 @@ export default function UpdatePost() {
             type="button"
             variant="outline"
             size="sm"
-            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 border-0"
             disabled={uploading}
           >
             {uploadProgress ? (
@@ -258,7 +257,6 @@ export default function UpdatePost() {
 
         <Button
           type="submit"
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
           disabled={uploading}
         >
           Update Post

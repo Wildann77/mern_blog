@@ -86,10 +86,10 @@ export default function DashboardComp() {
               <h3 className='text-muted-foreground text-md uppercase'>Total Users</h3>
               <p className='text-2xl font-semibold'>{totalUsers}</p>
             </div>
-            <HiOutlineUserGroup className='bg-teal-600 text-white rounded-full text-5xl p-3 shadow-lg' />
+            <HiOutlineUserGroup className='bg-primary text-primary-foreground rounded-full text-5xl p-3 shadow-lg' />
           </div>
           <div className='flex gap-2 text-sm'>
-            <span className='text-green-500 flex items-center'>
+            <span className='text-green-600 flex items-center'>
               <HiArrowNarrowUp />
               {lastMonthUsers}
             </span>
@@ -103,10 +103,10 @@ export default function DashboardComp() {
               <h3 className='text-muted-foreground text-md uppercase'>Total Comments</h3>
               <p className='text-2xl font-semibold'>{totalComments}</p>
             </div>
-            <HiAnnotation className='bg-indigo-600 text-white rounded-full text-5xl p-3 shadow-lg' />
+            <HiAnnotation className='bg-primary text-primary-foreground rounded-full text-5xl p-3 shadow-lg' />
           </div>
           <div className='flex gap-2 text-sm'>
-            <span className='text-green-500 flex items-center'>
+            <span className='text-green-600 flex items-center'>
               <HiArrowNarrowUp />
               {lastMonthComments}
             </span>
@@ -120,10 +120,10 @@ export default function DashboardComp() {
               <h3 className='text-muted-foreground text-md uppercase'>Total Posts</h3>
               <p className='text-2xl font-semibold'>{totalPosts}</p>
             </div>
-            <HiDocumentText className='bg-lime-600 text-white rounded-full text-5xl p-3 shadow-lg' />
+            <HiDocumentText className='bg-primary text-primary-foreground rounded-full text-5xl p-3 shadow-lg' />
           </div>
           <div className='flex gap-2 text-sm'>
-            <span className='text-green-500 flex items-center'>
+            <span className='text-green-600 flex items-center'>
               <HiArrowNarrowUp />
               {lastMonthPosts}
             </span>
@@ -138,7 +138,7 @@ export default function DashboardComp() {
             <h1 className='text-center p-2'>Recent users</h1>
             <Button
               variant='outline'
-              className='bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 border-0'
+              className=''
             >
               <Link to={'/dashboard?tab=users'}>See all</Link>
             </Button>
@@ -158,7 +158,7 @@ export default function DashboardComp() {
                       <img
                         src={user.profilePicture}
                         alt='user'
-                        className='w-10 h-10 rounded-full bg-gray-500'
+                        className='w-10 h-10 rounded-full bg-muted'
                       />
                     </TableCell>
                     <TableCell>{user.username}</TableCell>
@@ -174,7 +174,7 @@ export default function DashboardComp() {
             <h1 className='text-center p-2'>Recent comments</h1>
             <Button
               variant='outline'
-              className='bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 border-0'
+              className=''
             >
               <Link to={'/dashboard?tab=comments'}>See all</Link>
             </Button>
@@ -206,7 +206,7 @@ export default function DashboardComp() {
             <h1 className='text-center p-2'>Recent posts</h1>
             <Button
               variant='outline'
-              className='bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 border-0'
+              className=''
             >
               <Link to={'/dashboard?tab=posts'}>See all</Link>
             </Button>
@@ -227,7 +227,7 @@ export default function DashboardComp() {
                       <img
                         src={post.image}
                         alt='post'
-                        className='w-14 h-10 rounded-md bg-gray-500'
+                        className='w-14 h-10 rounded-md bg-muted'
                       />
                     </TableCell>
                     <TableCell className='w-96'>{post.title}</TableCell>

@@ -11,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 
 const FooterCom = () => {
   return (
-    <footer className="border-t-8 border-teal-500 bg-background">
+    <footer className="border-t bg-background">
       <div className="w-full max-w-7xl mx-auto px-4 py-8">
         <div className="grid w-full justify-between sm:flex md:grid-cols-1">
           <div className="mb-5">
@@ -19,7 +19,7 @@ const FooterCom = () => {
               to="/"
               className="self-center whitespace-nowrap text-lg sm:text-xl font-semibold dark:text-white"
             >
-              <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
+              <span className="px-2 py-1 bg-primary text-primary-foreground rounded-lg">
                 BangBoy
               </span>
               Blog

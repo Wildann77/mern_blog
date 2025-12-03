@@ -106,16 +106,16 @@ export default function DashUsers() {
                       <img
                         src={user.profilePicture}
                         alt={user.username}
-                        className="w-10 h-10 object-cover bg-gray-500 rounded-full"
+                        className="w-10 h-10 object-cover bg-muted rounded-full"
                       />
                     </TableCell>
                     <TableCell>{user.username}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
                       {user.isAdmin ? (
-                        <FaCheck className="text-green-500" />
+                        <FaCheck className="text-green-600" />
                       ) : (
-                        <FaTimes className="text-red-500" />
+                        <FaTimes className="text-destructive" />
                       )}
                     </TableCell>
                     <TableCell>
@@ -124,7 +124,7 @@ export default function DashUsers() {
                           setShowModal(true);
                           setUserIdToDelete(user._id);
                         }}
-                        className="font-medium text-red-500 hover:underline cursor-pointer"
+                        className="font-medium text-destructive hover:underline cursor-pointer"
                       >
                         Delete
                       </span>
@@ -138,7 +138,7 @@ export default function DashUsers() {
             <Button
               variant="link"
               onClick={handleShowMore}
-              className="w-full text-teal-500 py-7"
+              className="w-full text-primary py-7"
             >
               Show more
             </Button>
