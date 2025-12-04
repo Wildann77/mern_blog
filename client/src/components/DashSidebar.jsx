@@ -165,7 +165,7 @@ const DashSidebar = () => {
       </SidebarContent>
 
       {/* Sidebar Footer */}
-      <SidebarFooter>
+      <SidebarFooter className="border-t-0">
         <SidebarMenu>
           {/* User Info */}
           <SidebarMenuItem>
