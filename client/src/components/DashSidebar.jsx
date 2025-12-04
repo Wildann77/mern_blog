@@ -75,7 +75,7 @@ const DashSidebar = () => {
       </SidebarHeader>
 
       {/* Sidebar Content */}
-      <SidebarContent>
+      <SidebarContent className="[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
