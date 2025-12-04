@@ -54,7 +54,7 @@ const DashSidebar = () => {
   };
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="none">
       {/* Sidebar Header */}
       <SidebarHeader>
         <SidebarMenu>
