@@ -159,19 +159,21 @@ export default function Search() {
         <h1 className="text-3xl font-semibold sm:border-b border-border p-3 mt-5">
           Posts results:
         </h1>
-        <div className="p-7 flex flex-wrap gap-4">
+        <div className="p-7">
           {!loading && posts.length === 0 && (
             <p className="text-xl text-muted-foreground">No posts found.</p>
           )}
           {loading && <p className="text-xl text-muted-foreground">Loading...</p>}
-          {!loading &&
-            posts &&
-            posts.map((post) => <PostCard key={post._id} post={post} />)}
+          {!loading && posts && posts.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {posts.map((post) => <PostCard key={post._id} post={post} />)}
+            </div>
+          )}
           {showMore && (
             <Button
               variant="link"
               onClick={handleShowMore}
-              className="text-primary text-lg p-7 w-full"
+              className="text-primary text-lg p-7 w-full mt-4"
             >
               Show More
             </Button>

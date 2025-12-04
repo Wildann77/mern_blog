@@ -10,22 +10,21 @@ import {
 } from '@/components/ui/card';
 export default function PostCard({ post }) {
   return (
-    <Card className="relative max-w-md shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <Card className="relative max-w-md h-full flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="p-0">
-
         <img
           src={post.image}
           alt={post.title}
           className="w-full h-[260px] object-cover"
         />
       </CardHeader>
-      <CardContent className="p-4">
-        <CardTitle className="text-xl line-clamp-2 mb-2">{post.title}</CardTitle>
+      <CardContent className="p-4 flex-grow">
+        <CardTitle className="text-xl line-clamp-2 mb-2 min-h-[3.5rem]">{post.title}</CardTitle>
         <CardDescription className="italic text-sm">
           {post.category}
         </CardDescription>
       </CardContent>
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-4 pt-0 mt-auto">
         <Link to={`/post/${post.slug}`} className="w-full">
           <Button className="w-full">Read article</Button>
         </Link>

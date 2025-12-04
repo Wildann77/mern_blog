@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import DashSidebar from '../components/DashSidebar';
 import DashProfile from '../components/DashProfile';
@@ -12,6 +13,7 @@ import DashMyPosts from '../components/DashMyPosts';
 export default function Dashboard() {
     const location = useLocation();
     const [tab, setTab] = useState('');
+    const { currentUser } = useSelector((state) => state.user);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(location.search);
@@ -31,10 +33,10 @@ export default function Dashboard() {
                 <SidebarInset className='flex-1'>
                     <div className='flex flex-col min-h-screen'>
                         {/* Profile */}
-                        {tab === 'profile' && <DashProfile />}
+                        {(tab === 'profile' || (!tab && !currentUser?.isAdmin)) && <DashProfile />}
 
                         {/* Dashboard (Admin only) */}
-                        {tab === 'dash' && <DashboardComp />}
+                        {(tab === 'dash' || (!tab && currentUser?.isAdmin)) && <DashboardComp />}
 
                         {/* My Posts (All users) */}
                         {tab === 'myposts' && <DashMyPosts />}

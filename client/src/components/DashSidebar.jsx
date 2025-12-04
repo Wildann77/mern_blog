@@ -95,7 +95,7 @@ const DashSidebar = () => {
 
               {/* Profile */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={tab === 'profile'}>
+                <SidebarMenuButton asChild isActive={tab === 'profile' || (!tab && !currentUser?.isAdmin)}>
                   <Link to="/dashboard?tab=profile">
                     <HiUser />
                     <span>Profile</span>
