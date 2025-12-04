@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Loading } from '@/components/ui/loading';
 
 export default function DashPosts() {
   const { currentUser } = useSelector((state) => state.user);
@@ -26,10 +27,12 @@ export default function DashPosts() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [postIdToDelete, setPostIdToDelete] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
+        setLoading(true);
         // Admin view: get all posts (no userId filter)
         const res = await fetch(`/api/post/getposts`);
         const data = await res.json();
@@ -41,6 +44,8 @@ export default function DashPosts() {
         }
       } catch (error) {
         console.log(error.message);
+      } finally {
+        setLoading(false);
       }
     };
     if (currentUser.isAdmin) {
@@ -87,6 +92,10 @@ export default function DashPosts() {
       console.log(error.message);
     }
   };
+
+  if (loading) {
+    return <Loading text="Loading posts..." />;
+  }
 
   return (
     <div className='overflow-x-auto p-3'>

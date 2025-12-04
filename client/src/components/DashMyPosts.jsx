@@ -20,7 +20,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2 } from 'lucide-react';
+import { Loading } from '@/components/ui/loading';
 
 export default function DashMyPosts() {
     const { currentUser } = useSelector((state) => state.user);
@@ -119,11 +119,7 @@ export default function DashMyPosts() {
     };
 
     if (loading) {
-        return (
-            <div className='flex justify-center items-center min-h-[400px]'>
-                <Loader2 className='h-8 w-8 animate-spin text-primary' />
-            </div>
-        );
+        return <Loading text="Loading your posts..." />;
     }
 
     if (error) {

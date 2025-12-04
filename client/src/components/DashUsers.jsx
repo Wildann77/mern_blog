@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Loading } from '@/components/ui/loading';
 
 export default function DashUsers() {
   const { currentUser } = useSelector((state) => state.user);
@@ -26,10 +27,12 @@ export default function DashUsers() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        setLoading(true);
         const res = await fetch(`/api/user/getusers`);
         const data = await res.json();
         if (res.ok) {
@@ -40,6 +43,8 @@ export default function DashUsers() {
         }
       } catch (error) {
         console.log(error.message);
+      } finally {
+        setLoading(false);
       }
     };
     if (currentUser.isAdmin) {
@@ -79,6 +84,10 @@ export default function DashUsers() {
       console.log(error.message);
     }
   };
+
+  if (loading) {
+    return <Loading text="Loading users..." />;
+  }
 
   return (
     <div className="overflow-x-auto p-3">

@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Loading } from '@/components/ui/loading';
 
 export default function DashComments() {
   const { currentUser } = useSelector((state) => state.user);
@@ -25,10 +26,12 @@ export default function DashComments() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [commentIdToDelete, setCommentIdToDelete] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchComments = async () => {
       try {
+        setLoading(true);
         const res = await fetch(`/api/comment/getcomments`);
         const data = await res.json();
         if (res.ok) {
@@ -39,6 +42,8 @@ export default function DashComments() {
         }
       } catch (error) {
         console.log(error.message);
+      } finally {
+        setLoading(false);
       }
     };
     if (currentUser.isAdmin) {
@@ -81,6 +86,10 @@ export default function DashComments() {
       console.log(error.message);
     }
   };
+
+  if (loading) {
+    return <Loading text="Loading comments..." />;
+  }
 
   return (
     <div className="overflow-x-auto p-3">

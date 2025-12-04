@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchWithAuth } from '@/utils/authUtils';
+import { Loading } from '@/components/ui/loading';
 
 export default function DashboardComp() {
   const [users, setUsers] = useState([]);
@@ -29,6 +30,7 @@ export default function DashboardComp() {
   const [lastMonthUsers, setLastMonthUsers] = useState(0);
   const [lastMonthPosts, setLastMonthPosts] = useState(0);
   const [lastMonthComments, setLastMonthComments] = useState(0);
+  const [loading, setLoading] = useState(true);
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -71,12 +73,20 @@ export default function DashboardComp() {
         console.log(error.message);
       }
     };
-    if (currentUser.isAdmin) {
-      fetchUsers();
-      fetchPosts();
-      fetchComments();
-    }
+    const fetchAllData = async () => {
+      if (currentUser.isAdmin) {
+        setLoading(true);
+        await Promise.all([fetchUsers(), fetchPosts(), fetchComments()]);
+        setLoading(false);
+      }
+    };
+
+    fetchAllData();
   }, [currentUser]);
+
+  if (loading) {
+    return <Loading text="Loading dashboard data..." />;
+  }
 
   return (
     <div className='p-4 md:p-6 lg:p-8'>
