@@ -54,7 +54,12 @@ export const signin = async (req, res, next) => {
       return next(errorHandler(401, 'Invalid Password'));
     }
 
-    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+    // Token expires in 7 days
+    const token = jwt.sign(
+      { id: validUser._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
 
     const { password: pass, ...rest } = validUser._doc;
 
@@ -64,6 +69,7 @@ export const signin = async (req, res, next) => {
         httpOnly: true, // Fixed typo: httpOnyl -> httpOnly
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
       })
       .json(rest);
   } catch (error) {
@@ -76,12 +82,19 @@ export const google = async (req, res, next) => {
   try {
     const user = await User.findOne({ email });
     if (user) {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        { id: user._id },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
       const { password, ...rest } = user._doc;
       return res
         .status(200)
         .cookie('access_token', token, {
           httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         })
         .json(rest);
     } else {
@@ -99,13 +112,20 @@ export const google = async (req, res, next) => {
 
       await newUser.save();
 
-      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        { id: newUser._id },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
       const { password: pass, ...rest } = newUser._doc;
 
       return res
         .status(200)
         .cookie('access_token', token, {
           httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         })
         .json(rest);
     }
@@ -113,3 +133,27 @@ export const google = async (req, res, next) => {
     next(error);
   }
 };
+
+// Validate session endpoint
+export const validateSession = async (req, res, next) => {
+  const token = req.cookies.access_token;
+
+  if (!token) {
+    return res.status(401).json({ valid: false, message: 'No token found' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select('-password');
+
+    if (!user) {
+      return res.status(401).json({ valid: false, message: 'User not found' });
+    }
+
+    return res.status(200).json({ valid: true, user });
+  } catch (err) {
+    // Token expired or invalid
+    return res.status(401).json({ valid: false, message: 'Invalid or expired token' });
+  }
+};
+
