@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import About from './pages/About';
 import SignIn from './pages/SignIn';
@@ -16,31 +16,48 @@ import PostPage from './pages/PostPage';
 import ScrollToTop from './components/ScrollToTop';
 import Search from './pages/Search';
 
+const Layout = () => {
+  const location = useLocation();
+
+  // Hide footer on dashboard and related pages
+  const hideFooter = location.pathname.startsWith('/dashboard') ||
+    location.pathname.startsWith('/create-post') ||
+    location.pathname.startsWith('/update-post');
+
+  return (
+    <>
+      <ScrollToTop />
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/search" element={<Search />} />
+
+        <Route element={<PrivateRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/update-post/:postId" element={<UpdatePost />} />
+        </Route>
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/post/:postSlug" element={<PostPage />} />
+      </Routes>
+
+      {!hideFooter && <FooterCom />}
+    </>
+  );
+};
+
 const App = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <BrowserRouter>
-        <ScrollToTop />
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/sign-in" element={<SignIn />} />
-          <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/search" element={<Search />} />
-
-          <Route element={<PrivateRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/create-post" element={<CreatePost />} />
-            <Route path="/update-post/:postId" element={<UpdatePost />} />
-          </Route>
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/post/:postSlug" element={<PostPage />} />
-        </Routes>
-
-        <FooterCom />
+        <Layout />
       </BrowserRouter>
     </div>
   );
 };
+
 export default App;
+

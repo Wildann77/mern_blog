@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchWithAuth } from '@/utils/authUtils';
 
 export default function DashboardComp() {
@@ -79,165 +79,233 @@ export default function DashboardComp() {
   }, [currentUser]);
 
   return (
-    <div className='p-3 md:mx-auto'>
-      <div className='flex-wrap flex gap-4 justify-center'>
-        <Card className='flex flex-col p-3 gap-4 md:w-72 w-full'>
-          <div className='flex justify-between'>
-            <div>
-              <h3 className='text-muted-foreground text-md uppercase'>Total Users</h3>
-              <p className='text-2xl font-semibold'>{totalUsers}</p>
-            </div>
-            <HiOutlineUserGroup className='bg-primary text-primary-foreground rounded-full text-5xl p-3 shadow-lg' />
-          </div>
-          <div className='flex gap-2 text-sm'>
-            <span className='text-green-600 flex items-center'>
-              <HiArrowNarrowUp />
-              {lastMonthUsers}
-            </span>
-            <div className='text-muted-foreground'>Last month</div>
-          </div>
-        </Card>
+    <div className='p-4 md:p-6 lg:p-8'>
+      <div className='mx-auto max-w-7xl space-y-6'>
+        {/* Header */}
+        <div>
+          <h1 className='text-3xl font-bold tracking-tight'>Dashboard</h1>
+          <p className='text-muted-foreground mt-2'>
+            Welcome back! Here's what's happening with your blog today.
+          </p>
+        </div>
 
-        <Card className='flex flex-col p-3 gap-4 md:w-72 w-full'>
-          <div className='flex justify-between'>
-            <div>
-              <h3 className='text-muted-foreground text-md uppercase'>Total Comments</h3>
-              <p className='text-2xl font-semibold'>{totalComments}</p>
-            </div>
-            <HiAnnotation className='bg-primary text-primary-foreground rounded-full text-5xl p-3 shadow-lg' />
-          </div>
-          <div className='flex gap-2 text-sm'>
-            <span className='text-green-600 flex items-center'>
-              <HiArrowNarrowUp />
-              {lastMonthComments}
-            </span>
-            <div className='text-muted-foreground'>Last month</div>
-          </div>
-        </Card>
+        {/* Stats Cards */}
+        <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
+          {/* Total Users Card */}
+          <Card className='overflow-hidden'>
+            <CardContent className='p-6'>
+              <div className='flex items-center justify-between'>
+                <div className='space-y-1'>
+                  <p className='text-sm font-medium text-muted-foreground'>
+                    Total Users
+                  </p>
+                  <p className='text-3xl font-bold'>{totalUsers}</p>
+                </div>
+                <div className='h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center'>
+                  <HiOutlineUserGroup className='h-6 w-6 text-blue-600 dark:text-blue-400' />
+                </div>
+              </div>
+              <div className='mt-4 flex items-center gap-2 text-sm'>
+                <span className='flex items-center text-green-600 dark:text-green-400 font-medium'>
+                  <HiArrowNarrowUp className='h-4 w-4' />
+                  {lastMonthUsers}
+                </span>
+                <span className='text-muted-foreground'>from last month</span>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card className='flex flex-col p-3 gap-4 md:w-72 w-full'>
-          <div className='flex justify-between'>
-            <div>
-              <h3 className='text-muted-foreground text-md uppercase'>Total Posts</h3>
-              <p className='text-2xl font-semibold'>{totalPosts}</p>
-            </div>
-            <HiDocumentText className='bg-primary text-primary-foreground rounded-full text-5xl p-3 shadow-lg' />
-          </div>
-          <div className='flex gap-2 text-sm'>
-            <span className='text-green-600 flex items-center'>
-              <HiArrowNarrowUp />
-              {lastMonthPosts}
-            </span>
-            <div className='text-muted-foreground'>Last month</div>
-          </div>
-        </Card>
-      </div>
+          {/* Total Comments Card */}
+          <Card className='overflow-hidden'>
+            <CardContent className='p-6'>
+              <div className='flex items-center justify-between'>
+                <div className='space-y-1'>
+                  <p className='text-sm font-medium text-muted-foreground'>
+                    Total Comments
+                  </p>
+                  <p className='text-3xl font-bold'>{totalComments}</p>
+                </div>
+                <div className='h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-950 flex items-center justify-center'>
+                  <HiAnnotation className='h-6 w-6 text-purple-600 dark:text-purple-400' />
+                </div>
+              </div>
+              <div className='mt-4 flex items-center gap-2 text-sm'>
+                <span className='flex items-center text-green-600 dark:text-green-400 font-medium'>
+                  <HiArrowNarrowUp className='h-4 w-4' />
+                  {lastMonthComments}
+                </span>
+                <span className='text-muted-foreground'>from last month</span>
+              </div>
+            </CardContent>
+          </Card>
 
-      <div className='flex flex-wrap gap-4 py-3 mx-auto justify-center'>
-        <Card className='flex flex-col w-full md:w-auto p-2'>
-          <div className='flex justify-between p-3 text-sm font-semibold'>
-            <h1 className='text-center p-2'>Recent users</h1>
-            <Button
-              variant='outline'
-              className=''
-            >
-              <Link to={'/dashboard?tab=users'}>See all</Link>
-            </Button>
-          </div>
-          <div className='rounded-md border'>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User image</TableHead>
-                  <TableHead>Username</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users && users.map((user) => (
-                  <TableRow key={user._id}>
-                    <TableCell>
-                      <img
-                        src={user.profilePicture}
-                        alt='user'
-                        className='w-10 h-10 rounded-full bg-muted'
-                      />
-                    </TableCell>
-                    <TableCell>{user.username}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </Card>
+          {/* Total Posts Card */}
+          <Card className='overflow-hidden'>
+            <CardContent className='p-6'>
+              <div className='flex items-center justify-between'>
+                <div className='space-y-1'>
+                  <p className='text-sm font-medium text-muted-foreground'>
+                    Total Posts
+                  </p>
+                  <p className='text-3xl font-bold'>{totalPosts}</p>
+                </div>
+                <div className='h-12 w-12 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center'>
+                  <HiDocumentText className='h-6 w-6 text-green-600 dark:text-green-400' />
+                </div>
+              </div>
+              <div className='mt-4 flex items-center gap-2 text-sm'>
+                <span className='flex items-center text-green-600 dark:text-green-400 font-medium'>
+                  <HiArrowNarrowUp className='h-4 w-4' />
+                  {lastMonthPosts}
+                </span>
+                <span className='text-muted-foreground'>from last month</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-        <Card className='flex flex-col w-full md:w-auto p-2'>
-          <div className='flex justify-between p-3 text-sm font-semibold'>
-            <h1 className='text-center p-2'>Recent comments</h1>
-            <Button
-              variant='outline'
-              className=''
-            >
-              <Link to={'/dashboard?tab=comments'}>See all</Link>
-            </Button>
-          </div>
-          <div className='rounded-md border'>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Comment content</TableHead>
-                  <TableHead>Likes</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {comments && comments.map((comment) => (
-                  <TableRow key={comment._id}>
-                    <TableCell className='w-96'>
-                      <p className='line-clamp-2'>{comment.content}</p>
-                    </TableCell>
-                    <TableCell>{comment.numberOfLikes}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </Card>
+        {/* Tables Section */}
+        <div className='grid gap-6 lg:grid-cols-2'>
+          {/* Recent Users */}
+          <Card>
+            <CardHeader className='flex flex-row items-center justify-between pb-2'>
+              <CardTitle className='text-lg font-semibold'>Recent Users</CardTitle>
+              <Button variant='outline' size='sm' asChild>
+                <Link to={'/dashboard?tab=users'}>See all</Link>
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className='rounded-md border'>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User Image</TableHead>
+                      <TableHead>Username</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {users && users.length > 0 ? (
+                      users.map((user) => (
+                        <TableRow key={user._id}>
+                          <TableCell>
+                            <img
+                              src={user.profilePicture}
+                              alt='user'
+                              className='w-10 h-10 rounded-full bg-muted object-cover'
+                            />
+                          </TableCell>
+                          <TableCell className='font-medium'>{user.username}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={2} className='text-center text-muted-foreground'>
+                          No users yet
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card className='flex flex-col w-full md:w-auto p-2'>
-          <div className='flex justify-between p-3 text-sm font-semibold'>
-            <h1 className='text-center p-2'>Recent posts</h1>
-            <Button
-              variant='outline'
-              className=''
-            >
+          {/* Recent Comments */}
+          <Card>
+            <CardHeader className='flex flex-row items-center justify-between pb-2'>
+              <CardTitle className='text-lg font-semibold'>Recent Comments</CardTitle>
+              <Button variant='outline' size='sm' asChild>
+                <Link to={'/dashboard?tab=comments'}>See all</Link>
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className='rounded-md border'>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Comment Content</TableHead>
+                      <TableHead>Likes</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {comments && comments.length > 0 ? (
+                      comments.map((comment) => (
+                        <TableRow key={comment._id}>
+                          <TableCell className='max-w-xs'>
+                            <p className='line-clamp-2 text-sm'>{comment.content}</p>
+                          </TableCell>
+                          <TableCell className='font-medium'>{comment.numberOfLikes}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={2} className='text-center text-muted-foreground'>
+                          No comments yet
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Posts - Full Width */}
+        <Card>
+          <CardHeader className='flex flex-row items-center justify-between pb-2'>
+            <CardTitle className='text-lg font-semibold'>Recent Posts</CardTitle>
+            <Button variant='outline' size='sm' asChild>
               <Link to={'/dashboard?tab=posts'}>See all</Link>
             </Button>
-          </div>
-          <div className='rounded-md border'>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Post image</TableHead>
-                  <TableHead>Post Title</TableHead>
-                  <TableHead>Category</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {posts && posts.map((post) => (
-                  <TableRow key={post._id}>
-                    <TableCell>
-                      <img
-                        src={post.image}
-                        alt='post'
-                        className='w-14 h-10 rounded-md bg-muted'
-                      />
-                    </TableCell>
-                    <TableCell className='w-96'>{post.title}</TableCell>
-                    <TableCell className='w-5'>{post.category}</TableCell>
+          </CardHeader>
+          <CardContent>
+            <div className='rounded-md border'>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Post Image</TableHead>
+                    <TableHead>Post Title</TableHead>
+                    <TableHead>Category</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {posts && posts.length > 0 ? (
+                    posts.map((post) => (
+                      <TableRow key={post._id}>
+                        <TableCell>
+                          <img
+                            src={post.image}
+                            alt='post'
+                            className='w-20 h-12 rounded-md bg-muted object-cover'
+                          />
+                        </TableCell>
+                        <TableCell className='font-medium max-w-md'>
+                          <Link
+                            to={`/post/${post.slug}`}
+                            className='hover:underline'
+                          >
+                            {post.title}
+                          </Link>
+                        </TableCell>
+                        <TableCell>
+                          <span className='inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-primary/10 text-primary'>
+                            {post.category}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={3} className='text-center text-muted-foreground'>
+                        No posts yet
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
         </Card>
       </div>
     </div>

@@ -8,21 +8,18 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Lens } from '@/components/ui/lens';
-
 export default function PostCard({ post }) {
   return (
-    <Card className="relative max-w-md shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
+    <Card className="relative max-w-md shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="p-0">
-        <Lens isStatic position={{ x: 260, y: 150 }}>
-          <img
-            src={post.image}
-            alt={post.title}
-            className="w-full h-[260px] object-cover"
-          />
-        </Lens>
+
+        <img
+          src={post.image}
+          alt={post.title}
+          className="w-full h-[260px] object-cover"
+        />
       </CardHeader>
-      <CardContent className="p-4 flex-grow">
+      <CardContent className="p-4">
         <CardTitle className="text-xl line-clamp-2 mb-2">{post.title}</CardTitle>
         <CardDescription className="italic text-sm">
           {post.category}
