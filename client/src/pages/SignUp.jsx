@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useRegister } from '../hooks/useAuth';
 import OAuth from '../components/OAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,9 +10,7 @@ import { Loader2 } from 'lucide-react';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const { mutate: register, isPending, error } = useRegister();
 
   const handleChange = (e) => {
     setFormData({
@@ -24,36 +23,11 @@ const SignUp = () => {
     e.preventDefault();
 
     if (!formData.username || !formData.email || !formData.password) {
-      return setErrorMessage('Please fill all the fields');
+      return;
     }
-    try {
-      setLoading(true);
-      setErrorMessage(null);
-      const res = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
 
-      const data = await res.json();
-
-      if (data.success === false) {
-        setErrorMessage(data.message);
-      }
-      setLoading(false);
-
-      if (res.ok) {
-        navigate('/sign-in');
-      }
-    } catch (error) {
-      setErrorMessage(error.message);
-      setLoading(false);
-    }
+    register(formData);
   };
-
-  console.log(formData);
 
   return (
     <div className="min-h-screen mt-20">
@@ -102,9 +76,9 @@ const SignUp = () => {
             </div>
             <Button
               type="submit"
-              disabled={loading}
+              disabled={isPending}
             >
-              {loading ? (
+              {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   <span>Loading...</span>
@@ -124,9 +98,9 @@ const SignUp = () => {
             </span>
           </div>
 
-          {errorMessage && (
+          {error && (
             <Alert variant="destructive" className="mt-5">
-              <AlertDescription>{errorMessage}</AlertDescription>
+              <AlertDescription>{error.message}</AlertDescription>
             </Alert>
           )}
         </div>

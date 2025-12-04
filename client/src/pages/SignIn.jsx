@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
-import { signInFailure, signInStart, signInSucess } from '../redux/user/userSlice';
+import { Link } from 'react-router-dom';
+import { useLogin } from '../hooks/useAuth';
 import OAuth from '../components/OAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,9 +10,7 @@ import { Loader2 } from 'lucide-react';
 
 const SignIn = () => {
   const [formData, setFormData] = useState({});
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { loading, error: errorMessage } = useSelector((state) => state.user);
+  const { mutate: login, isPending, error } = useLogin();
 
   const handleChange = (e) => {
     setFormData({
@@ -26,34 +23,11 @@ const SignIn = () => {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
-      return dispatch(signInFailure('Please fill all the fields'));
+      return;
     }
-    try {
-      dispatch(signInStart());
-      const res = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
 
-      const data = await res.json();
-
-      if (data.success === false) {
-        dispatch(signInFailure(data.message));
-      }
-
-      if (res.ok) {
-        dispatch(signInSucess(data));
-        navigate('/');
-      }
-    } catch (error) {
-      dispatch(signInFailure(error.message));
-    }
+    login(formData);
   };
-
-  console.log(formData);
 
   return (
     <div className="min-h-screen mt-20">
@@ -93,9 +67,9 @@ const SignIn = () => {
             </div>
             <Button
               type="submit"
-              disabled={loading}
+              disabled={isPending}
             >
-              {loading ? (
+              {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   <span>Loading...</span>
@@ -115,9 +89,9 @@ const SignIn = () => {
             </span>
           </div>
 
-          {errorMessage && (
+          {error && (
             <Alert variant="destructive" className="mt-5">
-              <AlertDescription>{errorMessage}</AlertDescription>
+              <AlertDescription>{error.message}</AlertDescription>
             </Alert>
           )}
         </div>
