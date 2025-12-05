@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useUsers, useDeleteUser } from '../hooks/useUsers';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import {
@@ -22,76 +22,44 @@ import {
 import { Loading } from '@/components/ui/loading';
 
 export default function DashUsers() {
-  const { currentUser } = useSelector((state) => state.user);
-  const [users, setUsers] = useState([]);
-  const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [startIndex, setStartIndex] = useState(0);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/user/getusers`);
-        const data = await res.json();
-        if (res.ok) {
-          setUsers(data.users);
-          if (data.users.length < 9) {
-            setShowMore(false);
-          }
-        }
-      } catch (error) {
-        console.log(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (currentUser.isAdmin) {
-      fetchUsers();
-    }
-  }, [currentUser._id]);
+  // Fetch users with React Query
+  const { data, isLoading, error } = useUsers({ startIndex, limit: 9 });
+  const { mutate: deleteUser, isPending: isDeleting } = useDeleteUser();
 
-  const handleShowMore = async () => {
-    const startIndex = users.length;
-    try {
-      const res = await fetch(`/api/user/getusers?startIndex=${startIndex}`);
-      const data = await res.json();
-      if (res.ok) {
-        setUsers((prev) => [...prev, ...data.users]);
-        if (data.users.length < 9) {
-          setShowMore(false);
-        }
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+  const users = data?.users || [];
+  const showMore = users.length >= 9;
+
+  const handleShowMore = () => {
+    setStartIndex(users.length);
   };
 
-  const handleDeleteUser = async () => {
-    try {
-      const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
-        method: 'DELETE',
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
+  const handleDeleteUser = () => {
+    deleteUser(userIdToDelete, {
+      onSuccess: () => {
         setShowModal(false);
-      } else {
-        console.log(data.message);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+      },
+    });
   };
 
-  if (loading) {
+  if (isLoading) {
     return <Loading text="Loading users..." />;
+  }
+
+  if (error) {
+    return (
+      <div className="p-3">
+        <div className="text-destructive">Error loading users: {error.message}</div>
+      </div>
+    );
   }
 
   return (
     <div className="overflow-x-auto p-3">
-      {currentUser.isAdmin && users.length > 0 ? (
+      {users.length > 0 ? (
         <>
           <div className="rounded-md border shadow-md">
             <Table>
@@ -169,8 +137,8 @@ export default function DashUsers() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2 sm:justify-center">
-            <Button variant="destructive" onClick={handleDeleteUser}>
-              Yes, I'm sure
+            <Button variant="destructive" onClick={handleDeleteUser} disabled={isDeleting}>
+              {isDeleting ? 'Deleting...' : "Yes, I'm sure"}
             </Button>
             <Button variant="outline" onClick={() => setShowModal(false)}>
               No, cancel

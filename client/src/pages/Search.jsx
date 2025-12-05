@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { usePosts } from '../hooks/usePosts';
 import PostCard from '../components/PostCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,54 +14,43 @@ import {
 } from '@/components/ui/select';
 
 export default function Search() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [sidebarData, setSidebarData] = useState({
     searchTerm: '',
     sort: 'desc',
     category: 'uncategorized',
   });
 
-  console.log(sidebarData);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [showMore, setShowMore] = useState(false);
+  const [filters, setFilters] = useState({});
 
-  const location = useLocation();
-  const navigate = useNavigate();
+  // Use React Query hook
+  const { data, isLoading } = usePosts(filters);
+  const posts = data?.posts || [];
+  const showMore = posts.length === 9;
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const searchTermFromUrl = urlParams.get('searchTerm');
     const sortFromUrl = urlParams.get('sort');
     const categoryFromUrl = urlParams.get('category');
+
     if (searchTermFromUrl || sortFromUrl || categoryFromUrl) {
       setSidebarData({
-        ...sidebarData,
-        searchTerm: searchTermFromUrl,
-        sort: sortFromUrl,
-        category: categoryFromUrl,
+        searchTerm: searchTermFromUrl || '',
+        sort: sortFromUrl || 'desc',
+        category: categoryFromUrl || 'uncategorized',
       });
     }
 
-    const fetchPosts = async () => {
-      setLoading(true);
-      const searchQuery = urlParams.toString();
-      const res = await fetch(`/api/post/getposts?${searchQuery}`);
-      if (!res.ok) {
-        setLoading(false);
-        return;
-      }
-      if (res.ok) {
-        const data = await res.json();
-        setPosts(data.posts);
-        setLoading(false);
-        if (data.posts.length === 9) {
-          setShowMore(true);
-        } else {
-          setShowMore(false);
-        }
-      }
-    };
-    fetchPosts();
+    // Set filters for React Query
+    const newFilters = {};
+    if (searchTermFromUrl) newFilters.searchTerm = searchTermFromUrl;
+    if (sortFromUrl) newFilters.sort = sortFromUrl;
+    if (categoryFromUrl) newFilters.category = categoryFromUrl;
+
+    setFilters(newFilters);
   }, [location.search]);
 
   const handleChange = (e) => {
@@ -79,25 +69,12 @@ export default function Search() {
     navigate(`/search?${searchQuery}`);
   };
 
-  const handleShowMore = async () => {
+  const handleShowMore = () => {
     const numberOfPosts = posts.length;
-    const startIndex = numberOfPosts;
     const urlParams = new URLSearchParams(location.search);
-    urlParams.set('startIndex', startIndex);
+    urlParams.set('startIndex', numberOfPosts);
     const searchQuery = urlParams.toString();
-    const res = await fetch(`/api/post/getposts?${searchQuery}`);
-    if (!res.ok) {
-      return;
-    }
-    if (res.ok) {
-      const data = await res.json();
-      setPosts([...posts, ...data.posts]);
-      if (data.posts.length === 9) {
-        setShowMore(true);
-      } else {
-        setShowMore(false);
-      }
-    }
+    navigate(`/search?${searchQuery}`);
   };
 
   return (
@@ -148,9 +125,7 @@ export default function Search() {
               </SelectContent>
             </Select>
           </div>
-          <Button
-            type="submit"
-          >
+          <Button type="submit">
             Apply Filters
           </Button>
         </form>
@@ -160,11 +135,11 @@ export default function Search() {
           Posts results:
         </h1>
         <div className="p-7">
-          {!loading && posts.length === 0 && (
+          {!isLoading && posts.length === 0 && (
             <p className="text-xl text-muted-foreground">No posts found.</p>
           )}
-          {loading && <p className="text-xl text-muted-foreground">Loading...</p>}
-          {!loading && posts && posts.length > 0 && (
+          {isLoading && <p className="text-xl text-muted-foreground">Loading...</p>}
+          {!isLoading && posts && posts.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {posts.map((post) => <PostCard key={post._id} post={post} />)}
             </div>

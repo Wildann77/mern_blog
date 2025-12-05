@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useAllComments, useDeleteComment } from '../hooks/useComments';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import {
   Table,
@@ -21,79 +21,44 @@ import {
 import { Loading } from '@/components/ui/loading';
 
 export default function DashComments() {
-  const { currentUser } = useSelector((state) => state.user);
-  const [comments, setComments] = useState([]);
-  const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [commentIdToDelete, setCommentIdToDelete] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [startIndex, setStartIndex] = useState(0);
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/comment/getcomments`);
-        const data = await res.json();
-        if (res.ok) {
-          setComments(data.comments);
-          if (data.comments.length < 9) {
-            setShowMore(false);
-          }
-        }
-      } catch (error) {
-        console.log(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (currentUser.isAdmin) {
-      fetchComments();
-    }
-  }, [currentUser._id]);
+  // Fetch comments with React Query
+  const { data, isLoading, error } = useAllComments({ startIndex, limit: 9 });
+  const { mutate: deleteComment, isPending: isDeleting } = useDeleteComment();
 
-  const handleShowMore = async () => {
-    const startIndex = comments.length;
-    try {
-      const res = await fetch(`/api/comment/getcomments?startIndex=${startIndex}`);
-      const data = await res.json();
-      if (res.ok) {
-        setComments((prev) => [...prev, ...data.comments]);
-        if (data.comments.length < 9) {
-          setShowMore(false);
-        }
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+  const comments = data?.comments || [];
+  const showMore = comments.length >= 9;
+
+  const handleShowMore = () => {
+    setStartIndex(comments.length);
   };
 
-  const handleDeleteComment = async () => {
-    setShowModal(false);
-    try {
-      const res = await fetch(`/api/comment/deleteComment/${commentIdToDelete}`, {
-        method: 'DELETE',
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setComments((prev) =>
-          prev.filter((comment) => comment._id !== commentIdToDelete)
-        );
+  const handleDeleteComment = () => {
+    deleteComment(commentIdToDelete, {
+      onSuccess: () => {
         setShowModal(false);
-      } else {
-        console.log(data.message);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+      },
+    });
   };
 
-  if (loading) {
+  if (isLoading) {
     return <Loading text="Loading comments..." />;
+  }
+
+  if (error) {
+    return (
+      <div className="p-3">
+        <div className="text-destructive">Error loading comments: {error.message}</div>
+      </div>
+    );
   }
 
   return (
     <div className="overflow-x-auto p-3">
-      {currentUser.isAdmin && comments.length > 0 ? (
+      {comments.length > 0 ? (
         <>
           <div className="rounded-md border shadow-md">
             <Table>
@@ -159,8 +124,8 @@ export default function DashComments() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2 sm:justify-center">
-            <Button variant="destructive" onClick={handleDeleteComment}>
-              Yes, I'm sure
+            <Button variant="destructive" onClick={handleDeleteComment} disabled={isDeleting}>
+              {isDeleting ? 'Deleting...' : "Yes, I'm sure"}
             </Button>
             <Button variant="outline" onClick={() => setShowModal(false)}>
               No, cancel

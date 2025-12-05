@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useMyPosts, useDeletePost } from '../hooks/usePosts';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import {
     Table,
@@ -23,102 +23,34 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loading } from '@/components/ui/loading';
 
 export default function DashMyPosts() {
-    const { currentUser } = useSelector((state) => state.user);
-    const [userPosts, setUserPosts] = useState([]);
-    const [showMore, setShowMore] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [postIdToDelete, setPostIdToDelete] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [stats, setStats] = useState({
-        totalPosts: 0,
-        lastMonthPosts: 0,
-    });
-    const [deleteError, setDeleteError] = useState(null);
+    const [startIndex, setStartIndex] = useState(0);
 
-    useEffect(() => {
-        const fetchMyPosts = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const res = await fetch(`/api/post/myposts`);
-                const data = await res.json();
+    // Use React Query hooks
+    const { data, isLoading, error } = useMyPosts({ startIndex, limit: 9 });
+    const { mutate: deletePost, isPending: isDeleting, error: deleteError } = useDeletePost();
 
-                if (!res.ok) {
-                    setError(data.message || 'Failed to fetch posts');
-                    setLoading(false);
-                    return;
-                }
+    const userPosts = data?.posts || [];
+    const stats = {
+        totalPosts: data?.totalPosts || 0,
+        lastMonthPosts: data?.lastMonthPosts || 0,
+    };
+    const showMore = userPosts.length >= 9;
 
-                if (res.ok) {
-                    setUserPosts(data.posts);
-                    setStats({
-                        totalPosts: data.totalPosts,
-                        lastMonthPosts: data.lastMonthPosts,
-                    });
-                    if (data.posts.length < 9) {
-                        setShowMore(false);
-                    }
-                }
-            } catch (error) {
-                setError(error.message);
-                console.log(error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (currentUser) {
-            fetchMyPosts();
-        }
-    }, [currentUser]);
-
-    const handleShowMore = async () => {
-        const startIndex = userPosts.length;
-        try {
-            const res = await fetch(`/api/post/myposts?startIndex=${startIndex}`);
-            const data = await res.json();
-            if (res.ok) {
-                setUserPosts((prev) => [...prev, ...data.posts]);
-                if (data.posts.length < 9) {
-                    setShowMore(false);
-                }
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
+    const handleShowMore = () => {
+        setStartIndex(userPosts.length);
     };
 
-    const handleDeletePost = async () => {
-        setShowModal(false);
-        setDeleteError(null); // Reset delete error
-        try {
-            const res = await fetch(
-                `/api/post/deletepost/${postIdToDelete}/${currentUser._id}`,
-                {
-                    method: 'DELETE',
-                }
-            );
-            const data = await res.json();
-            if (!res.ok) {
-                console.log(data.message);
-                setDeleteError(data.message || 'Failed to delete post'); // Set delete error
-            } else {
-                setUserPosts((prev) =>
-                    prev.filter((post) => post._id !== postIdToDelete)
-                );
-                setStats((prev) => ({
-                    ...prev,
-                    totalPosts: prev.totalPosts - 1,
-                }));
-            }
-        } catch (error) {
-            console.log(error.message);
-            setDeleteError('Something went wrong'); // Set delete error
-        }
+    const handleDeletePost = () => {
+        deletePost(postIdToDelete, {
+            onSuccess: () => {
+                setShowModal(false);
+            },
+        });
     };
 
-    if (loading) {
+    if (isLoading) {
         return <Loading text="Loading your posts..." />;
     }
 
@@ -126,7 +58,7 @@ export default function DashMyPosts() {
         return (
             <div className='p-3'>
                 <Alert variant='destructive'>
-                    <AlertDescription>{error}</AlertDescription>
+                    <AlertDescription>{error.message}</AlertDescription>
                 </Alert>
             </div>
         );
@@ -149,7 +81,7 @@ export default function DashMyPosts() {
             {/* Delete Error Alert */}
             {deleteError && (
                 <Alert variant='destructive' className='mb-4'>
-                    <AlertDescription>{deleteError}</AlertDescription>
+                    <AlertDescription>{deleteError.message}</AlertDescription>
                 </Alert>
             )}
 
@@ -246,8 +178,8 @@ export default function DashMyPosts() {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className='flex gap-2 sm:justify-center'>
-                        <Button variant='destructive' onClick={handleDeletePost}>
-                            Yes, I'm sure
+                        <Button variant='destructive' onClick={handleDeletePost} disabled={isDeleting}>
+                            {isDeleting ? 'Deleting...' : "Yes, I'm sure"}
                         </Button>
                         <Button variant='outline' onClick={() => setShowModal(false)}>
                             No, cancel

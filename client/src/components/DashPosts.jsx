@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { usePosts, useDeletePost } from '../hooks/usePosts';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import {
   Table,
@@ -22,84 +22,36 @@ import {
 import { Loading } from '@/components/ui/loading';
 
 export default function DashPosts() {
-  const { currentUser } = useSelector((state) => state.user);
-  const [userPosts, setUserPosts] = useState([]);
-  const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [postIdToDelete, setPostIdToDelete] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [startIndex, setStartIndex] = useState(0);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        // Admin view: get all posts (no userId filter)
-        const res = await fetch(`/api/post/getposts`);
-        const data = await res.json();
-        if (res.ok) {
-          setUserPosts(data.posts);
-          if (data.posts.length < 9) {
-            setShowMore(false);
-          }
-        }
-      } catch (error) {
-        console.log(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (currentUser.isAdmin) {
-      fetchPosts();
-    }
-  }, [currentUser._id, currentUser.isAdmin]);
+  // Use React Query hooks
+  const { data, isLoading } = usePosts({ startIndex, limit: 9 });
+  const { mutate: deletePost, isPending: isDeleting } = useDeletePost();
 
-  const handleShowMore = async () => {
-    const startIndex = userPosts.length;
-    try {
-      const res = await fetch(
-        `/api/post/getposts?startIndex=${startIndex}`
-      );
-      const data = await res.json();
-      if (res.ok) {
-        setUserPosts((prev) => [...prev, ...data.posts]);
-        if (data.posts.length < 9) {
-          setShowMore(false);
-        }
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+  const userPosts = data?.posts || [];
+  const showMore = userPosts.length >= 9;
+
+  const handleShowMore = () => {
+    setStartIndex(userPosts.length);
   };
 
-  const handleDeletePost = async () => {
-    setShowModal(false);
-    try {
-      const res = await fetch(
-        `/api/post/deletepost/${postIdToDelete}/${currentUser._id}`,
-        {
-          method: 'DELETE',
-        }
-      );
-      const data = await res.json();
-      if (!res.ok) {
-        console.log(data.message);
-      } else {
-        setUserPosts((prev) =>
-          prev.filter((post) => post._id !== postIdToDelete)
-        );
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
+  const handleDeletePost = () => {
+    deletePost(postIdToDelete, {
+      onSuccess: () => {
+        setShowModal(false);
+      },
+    });
   };
 
-  if (loading) {
+  if (isLoading) {
     return <Loading text="Loading posts..." />;
   }
 
   return (
     <div className='overflow-x-auto p-3'>
-      {currentUser.isAdmin && userPosts.length > 0 ? (
+      {userPosts.length > 0 ? (
         <>
           <div className='rounded-md border shadow-md'>
             <Table>
@@ -172,7 +124,7 @@ export default function DashPosts() {
           )}
         </>
       ) : (
-        <p>You have no posts yet!</p>
+        <p>No posts yet!</p>
       )}
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
@@ -187,8 +139,8 @@ export default function DashPosts() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className='flex gap-2 sm:justify-center'>
-            <Button variant='destructive' onClick={handleDeletePost}>
-              Yes, I'm sure
+            <Button variant='destructive' onClick={handleDeletePost} disabled={isDeleting}>
+              {isDeleting ? 'Deleting...' : "Yes, I'm sure"}
             </Button>
             <Button variant='outline' onClick={() => setShowModal(false)}>
               No, cancel

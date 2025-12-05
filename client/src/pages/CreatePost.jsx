@@ -3,7 +3,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import { useState, useEffect } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { useNavigate } from 'react-router-dom';
+import { useCreatePost } from '../hooks/usePosts';
 import { supabase } from '../supabaseClient';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,9 +23,9 @@ export default function CreatePost() {
   const [uploadProgress, setUploadProgress] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
   const [formData, setFormData] = useState({});
-  const [publishError, setPublishError] = useState(null);
 
-  const navigate = useNavigate();
+  // Use React Query mutation
+  const { mutate: createPost, isPending, error: publishError } = useCreatePost();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -89,32 +89,13 @@ export default function CreatePost() {
     uploadImageToSupabase();
   }, [imageFile]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.title || !formData.content || !formData.image) {
-      setPublishError('Please fill all fields and upload an image');
       return;
     }
 
-    try {
-      const res = await fetch('/api/post/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        setPublishError(data.message || 'Post creation failed');
-        return;
-      }
-
-      navigate(`/post/${data.slug}`);
-    } catch (error) {
-      setPublishError('Something went wrong');
-    }
+    createPost(formData);
   };
 
   return (
@@ -202,14 +183,14 @@ export default function CreatePost() {
 
         <Button
           type='submit'
-          disabled={uploading}
+          disabled={uploading || isPending}
         >
-          Publish
+          {isPending ? 'Publishing...' : 'Publish'}
         </Button>
 
         {publishError && (
           <Alert variant="destructive" className='mt-5'>
-            <AlertDescription>{publishError}</AlertDescription>
+            <AlertDescription>{publishError.message}</AlertDescription>
           </Alert>
         )}
       </form>

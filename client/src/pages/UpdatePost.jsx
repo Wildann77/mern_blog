@@ -3,9 +3,9 @@ import 'react-quill-new/dist/quill.snow.css';
 import { useState, useEffect } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { useSelector } from 'react-redux';
+import { usePost, useUpdatePost } from '../hooks/usePosts';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Loading } from '@/components/ui/loading';
 
 export default function UpdatePost() {
   const [imageFile, setImageFile] = useState(null);
@@ -24,45 +25,20 @@ export default function UpdatePost() {
   const [uploadProgress, setUploadProgress] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
   const [formData, setFormData] = useState({});
-  const [publishError, setPublishError] = useState(null);
+
   const { postId } = useParams();
-  const { currentUser } = useSelector((state) => state.user);
-  const [isLoadingPost, setIsLoadingPost] = useState(true);
 
-  const navigate = useNavigate();
+  // Use React Query hooks
+  const { data: post, isLoading, error: fetchError } = usePost(postId);
+  const { mutate: updatePost, isPending, error: updateError } = useUpdatePost();
 
+  // Initialize form data when post is loaded
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const res = await fetch(`/api/post/getposts?postId=${postId}`);
-        const data = await res.json();
-
-        if (!res.ok) {
-          setPublishError(data.message || 'Failed to fetch post data');
-          setIsLoadingPost(false);
-          return;
-        }
-
-        const post = data.posts[0];
-        setFormData(post);
-        setImageFileUrl(post.image || null);
-
-        console.log('✅ formData updated dengan:', post);
-
-        setPublishError(null);
-      } catch (error) {
-        setPublishError(error.message);
-      } finally {
-        setIsLoadingPost(false);
-      }
-    };
-
-    fetchPost();
-  }, [postId]);
-
-  useEffect(() => {
-    console.log('🌀 formData berubah:', formData);
-  }, [formData]);
+    if (post) {
+      setFormData(post);
+      setImageFileUrl(post.image || null);
+    }
+  }, [post]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -74,7 +50,6 @@ export default function UpdatePost() {
       setImageFileUploadError(null);
       setImageFile(file);
       setImageFileUrl(URL.createObjectURL(file));
-      console.log('🔥 formData before PUT:', formData);
     }
   };
 
@@ -127,50 +102,38 @@ export default function UpdatePost() {
     uploadImageToSupabase();
   }, [imageFile]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (isLoadingPost) {
-      console.warn('⏳ Post data belum siap');
-      return;
-    }
-
     if (!formData._id) {
-      console.error('❌ formData._id tidak tersedia');
-      setPublishError('ID postingan tidak ditemukan. Coba muat ulang halaman.');
       return;
     }
 
     const strippedContent = formData.content?.replace(/<(.|\n)*?>/g, '').trim();
 
     if (!formData.title || !strippedContent || !formData.image) {
-      setPublishError('Harap lengkapi semua kolom dan upload gambar');
       return;
     }
 
-    try {
-      const res = await fetch(
-        `/api/post/updatepost/${formData._id}/${currentUser._id}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        }
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setPublishError(data.message || 'Gagal update post');
-        return;
-      }
-
-      console.log('✅ Post berhasil diupdate');
-      navigate(`/post/${data.slug}`);
-    } catch (error) {
-      setPublishError('Terjadi kesalahan saat mengupdate post');
-    }
+    updatePost({
+      postId: formData._id,
+      data: formData
+    });
   };
+
+  if (isLoading) {
+    return <Loading text="Loading post..." />;
+  }
+
+  if (fetchError) {
+    return (
+      <div className="p-3 max-w-3xl mx-auto min-h-screen">
+        <Alert variant="destructive">
+          <AlertDescription>Error loading post: {fetchError.message}</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
@@ -257,14 +220,14 @@ export default function UpdatePost() {
 
         <Button
           type="submit"
-          disabled={uploading}
+          disabled={uploading || isPending}
         >
-          Update Post
+          {isPending ? 'Updating...' : 'Update Post'}
         </Button>
 
-        {publishError && (
+        {updateError && (
           <Alert variant="destructive" className="mt-5">
-            <AlertDescription>{publishError}</AlertDescription>
+            <AlertDescription>{updateError.message}</AlertDescription>
           </Alert>
         )}
       </form>

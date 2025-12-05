@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDashboardStats } from '../hooks/useDashboard';
 import {
   HiAnnotation,
   HiArrowNarrowUp,
@@ -17,76 +16,36 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { fetchWithAuth } from '@/utils/authUtils';
 import { Loading } from '@/components/ui/loading';
 
 export default function DashboardComp() {
-  const [users, setUsers] = useState([]);
-  const [comments, setComments] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [totalUsers, setTotalUsers] = useState(0);
-  const [totalPosts, setTotalPosts] = useState(0);
-  const [totalComments, setTotalComments] = useState(0);
-  const [lastMonthUsers, setLastMonthUsers] = useState(0);
-  const [lastMonthPosts, setLastMonthPosts] = useState(0);
-  const [lastMonthComments, setLastMonthComments] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const { currentUser } = useSelector((state) => state.user);
+  const { data: stats, isLoading, error } = useDashboardStats();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetchWithAuth('/api/user/getusers?limit=5');
-        const data = await res.json();
-        if (res.ok) {
-          setUsers(data.users);
-          setTotalUsers(data.totalUsers);
-          setLastMonthUsers(data.lastMonthUsers);
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-    const fetchPosts = async () => {
-      try {
-        const res = await fetchWithAuth('/api/post/getposts?limit=5');
-        const data = await res.json();
-        if (res.ok) {
-          setPosts(data.posts);
-          setTotalPosts(data.totalPosts);
-          setLastMonthPosts(data.lastMonthPosts);
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-    const fetchComments = async () => {
-      try {
-        const res = await fetchWithAuth('/api/comment/getcomments?limit=5');
-        const data = await res.json();
-        if (res.ok) {
-          setComments(data.comments);
-          setTotalComments(data.totalComments);
-          setLastMonthComments(data.lastMonthComments);
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-    const fetchAllData = async () => {
-      if (currentUser.isAdmin) {
-        setLoading(true);
-        await Promise.all([fetchUsers(), fetchPosts(), fetchComments()]);
-        setLoading(false);
-      }
-    };
-
-    fetchAllData();
-  }, [currentUser]);
-
-  if (loading) {
+  if (isLoading) {
     return <Loading text="Loading dashboard data..." />;
   }
+
+  if (error) {
+    return (
+      <div className='p-4 md:p-6 lg:p-8'>
+        <div className='text-center text-destructive'>
+          Error loading dashboard: {error.message}
+        </div>
+      </div>
+    );
+  }
+
+  const {
+    users = [],
+    totalUsers = 0,
+    lastMonthUsers = 0,
+    posts = [],
+    totalPosts = 0,
+    lastMonthPosts = 0,
+    comments = [],
+    totalComments = 0,
+    lastMonthComments = 0,
+  } = stats || {};
 
   return (
     <div className='p-4 md:p-6 lg:p-8'>
