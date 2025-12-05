@@ -1,23 +1,14 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, ChevronRight, PenSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PostCard from '../components/PostCard';
 import { useSelector } from 'react-redux';
+import { usePosts } from '../hooks/usePosts';
 
 export default function Home() {
-  const [posts, setPosts] = useState([]);
+  const { data: postsData } = usePosts();
   const { currentUser } = useSelector((state) => state.user);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const res = await fetch('/api/post/getPosts');
-      const data = await res.json();
-      setPosts(data.posts);
-    };
-    fetchPosts();
-  }, []);
 
   return (
     <div>
@@ -104,7 +95,7 @@ export default function Home() {
 
       {/* Recent Posts Section */}
       <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 py-12">
-        {posts && posts.length > 0 && (
+        {postsData?.posts && postsData.posts.length > 0 && (
           <div className="flex flex-col gap-6">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -118,7 +109,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {posts.map((post, index) => (
+              {postsData.posts.map((post, index) => (
                 <motion.div
                   key={post._id}
                   initial={{ opacity: 0, y: 20 }}
