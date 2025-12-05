@@ -43,6 +43,9 @@ app.listen(PORT, () => {
 });
 
 // Routes
+app.get('/', (req, res) => {
+  res.json({ message: 'MERN Blog API is running' });
+});
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/post', postRoutes)
