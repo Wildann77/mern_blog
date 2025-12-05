@@ -5,10 +5,17 @@ import User from './models/user.model.js';
 
 dotenv.config();
 
-// Gunakan environment variable atau fallback ke string koneksi langsung (dari postSeeder.js)
-const MONGO_URI = process.env.MONGO || 'mongodb+srv://boyblaco77:boyblaco77@mern-blog.xn0f1je.mongodb.net/mern-blog?retryWrites=true&w=majority&appName=mern-blog';
+// Use environment variable for MongoDB connection
+const MONGO_URI = process.env.MONGO;
 
 const seedAdmin = async () => {
+    // Validate MONGO_URI
+    if (!MONGO_URI) {
+        console.error('❌ MONGO environment variable is not set!');
+        console.error('Please check your .env file');
+        process.exit(1);
+    }
+
     try {
         await mongoose.connect(MONGO_URI);
         console.log('✅ MongoDB connected...');

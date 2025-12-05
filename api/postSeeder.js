@@ -1,7 +1,10 @@
 import mongoose from 'mongoose';
 import { faker } from '@faker-js/faker';
+import dotenv from 'dotenv';
 import Post from './models/post.model.js';
 import User from './models/user.model.js';
+
+dotenv.config();
 
 const createSlug = (title) => {
   return title
@@ -11,10 +14,17 @@ const createSlug = (title) => {
     .replace(/[^a-zA-Z0-9-]/g, '');
 };
 
-// 🟢 Koneksi langsung ke MongoDB
-const MONGO_URI = 'mongodb+srv://boyblaco77:boyblaco77@mern-blog.xn0f1je.mongodb.net/mern-blog?retryWrites=true&w=majority&appName=mern-blog';
+// Use environment variable for MongoDB connection
+const MONGO_URI = process.env.MONGO;
 
 const seedPosts = async () => {
+  // Validate MONGO_URI
+  if (!MONGO_URI) {
+    console.error('❌ MONGO environment variable is not set!');
+    console.error('Please check your .env file');
+    process.exit(1);
+  }
+
   try {
     await mongoose.connect(MONGO_URI);
     console.log('✅ MongoDB connected...');
