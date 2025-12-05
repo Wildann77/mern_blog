@@ -1,4 +1,4 @@
-import { createSlice } from '/node_modules/.vite/deps/@reduxjs_toolkit.js?v=5a5761f6';
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   currentUser: null,
