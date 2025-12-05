@@ -5,6 +5,7 @@ import {
     signoutSuccess,
     updateSuccess,
 } from '../redux/user/userSlice';
+import { authService } from '../services/authService';
 
 // Create Auth Context
 const AuthContext = createContext(null);
@@ -40,6 +41,24 @@ export const AuthProvider = ({ children }) => {
         // For now, we rely on backend validation via Axios interceptors
         return false;
     };
+
+    // Check for stored token and validate on app load
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token && !currentUser) {
+            authService.validateSession()
+                .then((data) => {
+                    if (data.valid) {
+                        login(data.user);
+                    } else {
+                        localStorage.removeItem('token');
+                    }
+                })
+                .catch(() => {
+                    localStorage.removeItem('token');
+                });
+        }
+    }, []);
 
     // Auto-logout if token is expired (optional)
     useEffect(() => {

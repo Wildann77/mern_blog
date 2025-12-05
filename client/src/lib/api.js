@@ -11,17 +11,13 @@ const api = axios.create({
     withCredentials: true, // Include cookies in requests
 });
 
-// Request interceptor - attach token from Redux store
+// Request interceptor - attach token from localStorage
 api.interceptors.request.use(
     (config) => {
-        // Get current state from Redux store
-        const state = store.getState();
-        const currentUser = state.user.currentUser;
-
-        // If user is authenticated, we rely on httpOnly cookies
-        // No need to manually attach token as it's handled by cookies
-        // This interceptor can be used for other request modifications if needed
-
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
         return config;
     },
     (error) => {

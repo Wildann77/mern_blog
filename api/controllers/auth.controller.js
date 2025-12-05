@@ -71,7 +71,7 @@ export const signin = async (req, res, next) => {
         sameSite: 'strict',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
       })
-      .json(rest);
+      .json({ ...rest, token });
   } catch (error) {
     next(error);
   }
@@ -96,7 +96,7 @@ export const google = async (req, res, next) => {
           sameSite: 'strict',
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         })
-        .json(rest);
+        .json({ ...rest, token });
     } else {
       const generatedPassword = Math.random().toString(36).slice(-8);
       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
@@ -127,7 +127,7 @@ export const google = async (req, res, next) => {
           sameSite: 'strict',
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         })
-        .json(rest);
+        .json({ ...rest, token });
     }
   } catch (error) {
     next(error);
@@ -136,7 +136,7 @@ export const google = async (req, res, next) => {
 
 // Validate session endpoint
 export const validateSession = async (req, res, next) => {
-  const token = req.cookies.access_token;
+  const token = req.headers.authorization?.replace('Bearer ', '') || req.cookies.access_token;
 
   if (!token) {
     return res.status(401).json({ valid: false, message: 'No token found' });

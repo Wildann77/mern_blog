@@ -16,7 +16,9 @@ export const useLogin = () => {
     return useMutation({
         mutationFn: authService.loginUser,
         onSuccess: (data) => {
-            login(data);
+            const { token, ...userData } = data;
+            localStorage.setItem('token', token);
+            login(userData);
             navigate('/');
         },
         onError: (error) => {
@@ -48,7 +50,9 @@ export const useGoogleAuth = () => {
     return useMutation({
         mutationFn: authService.googleAuth,
         onSuccess: (data) => {
-            login(data);
+            const { token, ...userData } = data;
+            localStorage.setItem('token', token);
+            login(userData);
             navigate('/');
         },
         onError: (error) => {
@@ -65,12 +69,14 @@ export const useLogout = () => {
     return useMutation({
         mutationFn: authService.logoutUser,
         onSuccess: () => {
+            localStorage.removeItem('token');
             logout();
             navigate('/sign-in');
         },
         onError: (error) => {
             console.error('Logout error:', error);
             // Even if API call fails, logout locally
+            localStorage.removeItem('token');
             logout();
             navigate('/sign-in');
         },
